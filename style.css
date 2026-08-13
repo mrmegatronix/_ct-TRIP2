@@ -1,0 +1,148 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #0b0c10;
+    color: #c5c6c7;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+}
+
+#map {
+    height: 100vh;
+    width: 100vw;
+    z-index: 1;
+}
+
+/* Custom UI Cards for Bus ETAs */
+.eta-card {
+    background: rgba(11, 12, 16, 0.9);
+    border: 1px solid #45a29e;
+    border-radius: 8px;
+    padding: 10px;
+    color: #fff;
+    min-width: 220px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.eta-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    color: #66fcf1;
+    border-bottom: 1px solid #1f2833;
+    padding-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.eta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.eta-route {
+    color: #ffffff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    min-width: 25px;
+    text-align: center;
+    background: #45a29e; /* default fallback */
+}
+
+/* Specific route colors */
+.route-1 { background-color: #3498db; }  /* Blue Line */
+.route-125 { background-color: #2ecc71; } /* Green */
+.route-95 { background-color: #9b59b6; }  /* Purple */
+
+.eta-dest {
+    flex-grow: 1;
+    margin: 0 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 13px;
+    color: #c5c6c7;
+}
+
+.eta-time {
+    font-weight: bold;
+    color: #66fcf1;
+    white-space: nowrap;
+}
+
+/* Custom Leaflet overrides for dark theme popups */
+.leaflet-popup-content-wrapper {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.leaflet-popup-content {
+    margin: 0 !important;
+}
+
+.leaflet-popup-tip {
+    background: rgba(11, 12, 16, 0.9) !important;
+    border: 1px solid #45a29e;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+    color: #fff;
+    top: 5px;
+    right: 5px;
+}
+
+/* Venue Icon Styling */
+.venue-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #66fcf1;
+    color: #0b0c10;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 18px;
+    box-shadow: 0 0 10px #66fcf1;
+    border: 3px solid #0b0c10;
+}
+
+/* Bus Stop Icon Styling */
+.stop-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1f2833;
+    color: #45a29e;
+    border-radius: 50%;
+    font-size: 16px;
+    border: 2px solid #45a29e;
+}
+
+/* Venue Marker and Walking Line Tooltip */
+.venue-logo {
+    border-radius: 50%;
+    border: 3px solid #66fcf1;
+    background: #0b0c10;
+    box-shadow: 0 0 15px rgba(102, 252, 241, 0.5);
+    object-fit: cover;
+}
+
+.walking-tooltip {
+    background-color: transparent !important;
+    color: #ff4d4d;
+    border: none !important;
+    box-shadow: none !important;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 1px 1px 2px black;
+    direction: ltr;
+}
+.walking-tooltip::before {
+    display: none;
+}
