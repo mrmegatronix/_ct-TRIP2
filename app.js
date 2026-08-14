@@ -32,10 +32,10 @@ L.marker(venueCoords, { icon: venueIcon, zIndexOffset: 1000 }).addTo(map)
 
 // Bus Stop Definitions
 const stops = {
-    north: { name: 'North (Main North Rd)', coords: [-43.4746, 172.6171], id: '13347' }, // West side
-    south: { name: 'South (Main North Rd)', coords: [-43.4743, 172.6174], id: '15319' }, // East side
-    east:  { name: 'East (Daniels Rd)', coords: [-43.4781, 172.6183], id: '29195' }, // North side
-    west:  { name: 'West (Daniels Rd)', coords: [-43.4782, 172.6177], id: '29900' }  // South side
+    north: { name: 'North (Main North Rd)', coords: [-43.477230, 172.616740], id: '13347' }, // West side
+    south: { name: 'South (Main North Rd)', coords: [-43.477250, 172.617030], id: '15319' }, // East side
+    east:  { name: 'East (Daniels Rd)', coords: [-43.478260, 172.617800], id: '29195' }, // North side
+    west:  { name: 'West (Daniels Rd)', coords: [-43.478370, 172.617420], id: '29900' }  // South side
 };
 
 const stopIcon = L.divIcon({
