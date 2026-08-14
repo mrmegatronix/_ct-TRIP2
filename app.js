@@ -32,10 +32,10 @@ L.marker(venueCoords, { icon: venueIcon, zIndexOffset: 1000 }).addTo(map)
 
 // Bus Stop Definitions
 const stops = {
-    north: { name: 'North (Main North Rd)', coords: [-43.4755, 172.6171], id: '13347' },
-    south: { name: 'South (Main North Rd)', coords: [-43.4795, 172.6162], id: '15319' },
-    east:  { name: 'East (Daniels Rd)', coords: [-43.4782, 172.6188], id: '29195' },
-    west:  { name: 'West (Daniels Rd)', coords: [-43.4781, 172.6160], id: '29900' }
+    north: { name: 'North (Main North Rd)', coords: [-43.4746, 172.6171], id: '13347' }, // West side
+    south: { name: 'South (Main North Rd)', coords: [-43.4743, 172.6174], id: '15319' }, // East side
+    east:  { name: 'East (Daniels Rd)', coords: [-43.4781, 172.6183], id: '29195' }, // North side
+    west:  { name: 'West (Daniels Rd)', coords: [-43.4782, 172.6177], id: '29900' }  // South side
 };
 
 const stopIcon = L.divIcon({
@@ -108,15 +108,28 @@ const route125Path = [
 ];
 
 // Draw main routes
+const mainNorthRouteReverse = [...mainNorthRoute].reverse();
 const mainLine = L.polyline(mainNorthRoute, { color: '#3498db', weight: 5, opacity: 0.2 }).addTo(map); // Blue for Route 1
-const route95Path = mainNorthRoute.map(coord => [coord[0], coord[1] - 0.00005]);
-const route95Line = L.polyline(route95Path, { color: '#9b59b6', weight: 5, opacity: 0.2 }).addTo(map); // Purple for Route 95
-const danielsLine = L.polyline(route125Path, { color: '#2ecc71', weight: 5, opacity: 0.2 }).addTo(map); // Green for Route 125
+const mainLineRev = L.polyline(mainNorthRouteReverse, { opacity: 0 }).addTo(map);
 
-// Add animated arrows to the routes
+const route95Path = mainNorthRoute.map(coord => [coord[0], coord[1] - 0.00005]);
+const route95PathReverse = [...route95Path].reverse();
+const route95Line = L.polyline(route95Path, { color: '#9b59b6', weight: 5, opacity: 0.2 }).addTo(map); // Purple for Route 95
+const route95LineRev = L.polyline(route95PathReverse, { opacity: 0 }).addTo(map);
+
+const route125PathReverse = [...route125Path].reverse();
+const danielsLine = L.polyline(route125Path, { color: '#2ecc71', weight: 5, opacity: 0.2 }).addTo(map); // Green for Route 125
+const danielsLineRev = L.polyline(route125PathReverse, { opacity: 0 }).addTo(map);
+
+// Add animated arrows to the routes in BOTH directions
 L.polylineDecorator(mainLine, { patterns: [{ offset: 0, repeat: 100, symbol: L.Symbol.arrowHead({pixelSize: 15, pathOptions: {fillOpacity: 1, weight: 0, color: '#3498db'}}) }] }).addTo(map);
+L.polylineDecorator(mainLineRev, { patterns: [{ offset: 50, repeat: 100, symbol: L.Symbol.arrowHead({pixelSize: 15, pathOptions: {fillOpacity: 1, weight: 0, color: '#3498db'}}) }] }).addTo(map);
+
 L.polylineDecorator(route95Line, { patterns: [{ offset: 25, repeat: 100, symbol: L.Symbol.arrowHead({pixelSize: 15, pathOptions: {fillOpacity: 1, weight: 0, color: '#9b59b6'}}) }] }).addTo(map);
-L.polylineDecorator(danielsLine, { patterns: [{ offset: 50, repeat: 100, symbol: L.Symbol.arrowHead({pixelSize: 15, pathOptions: {fillOpacity: 1, weight: 0, color: '#2ecc71'}}) }] }).addTo(map);
+L.polylineDecorator(route95LineRev, { patterns: [{ offset: 75, repeat: 100, symbol: L.Symbol.arrowHead({pixelSize: 15, pathOptions: {fillOpacity: 1, weight: 0, color: '#9b59b6'}}) }] }).addTo(map);
+
+L.polylineDecorator(danielsLine, { patterns: [{ offset: 10, repeat: 100, symbol: L.Symbol.arrowHead({pixelSize: 15, pathOptions: {fillOpacity: 1, weight: 0, color: '#2ecc71'}}) }] }).addTo(map);
+L.polylineDecorator(danielsLineRev, { patterns: [{ offset: 60, repeat: 100, symbol: L.Symbol.arrowHead({pixelSize: 15, pathOptions: {fillOpacity: 1, weight: 0, color: '#2ecc71'}}) }] }).addTo(map);
 
 // Carousel Logic (Rotate active panel every 15 seconds)
 const stopKeys = Object.keys(stops);
@@ -133,8 +146,11 @@ function cyclePanels() {
     }
     
     mainLine.setStyle({ opacity: 0.2, weight: 4 });
+    mainLineRev.setStyle({ opacity: 0.2, weight: 4 });
     route95Line.setStyle({ opacity: 0.2, weight: 4 });
+    route95LineRev.setStyle({ opacity: 0.2, weight: 4 });
     danielsLine.setStyle({ opacity: 0.2, weight: 4 });
+    danielsLineRev.setStyle({ opacity: 0.2, weight: 4 });
     
     // Highlight Active Stop
     stopMarkers[activeKey].openPopup();
@@ -144,9 +160,12 @@ function cyclePanels() {
     // Highlight Active Route(s)
     if (activeKey === 'north' || activeKey === 'south') {
         mainLine.setStyle({ opacity: 1, weight: 6 });
+        mainLineRev.setStyle({ opacity: 1, weight: 6 });
         route95Line.setStyle({ opacity: 1, weight: 6 });
+        route95LineRev.setStyle({ opacity: 1, weight: 6 });
     } else {
         danielsLine.setStyle({ opacity: 1, weight: 6 });
+        danielsLineRev.setStyle({ opacity: 1, weight: 6 });
     }
     
     currentStopIndex = (currentStopIndex + 1) % stopKeys.length;
