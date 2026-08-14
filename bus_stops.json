@@ -1,0 +1,132 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-08-14T01:09:10Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 9166944773,
+  "lat": -43.4785000,
+  "lon": 172.6203600,
+  "tags": {
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Daniels Rd near Hannah Pl",
+    "network": "Metro Christchurch",
+    "network:wikidata": "Q7258007",
+    "public_transport": "platform",
+    "ref": "29819"
+  }
+},
+{
+  "type": "node",
+  "id": 9166944909,
+  "lat": -43.4795400,
+  "lon": 172.6165500,
+  "tags": {
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Main North Rd near Tuckers Rd",
+    "network": "Metro Christchurch",
+    "network:wikidata": "Q7258007",
+    "public_transport": "platform",
+    "ref": "12052"
+  }
+},
+{
+  "type": "node",
+  "id": 9166945703,
+  "lat": -43.4796800,
+  "lon": 172.6168400,
+  "tags": {
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Main North Rd near Tuckers Rd",
+    "network": "Metro Christchurch",
+    "network:wikidata": "Q7258007",
+    "public_transport": "platform",
+    "ref": "15645"
+  }
+},
+{
+  "type": "node",
+  "id": 9166945898,
+  "lat": -43.4772500,
+  "lon": 172.6170300,
+  "tags": {
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Main North Rd",
+    "network": "Metro Christchurch",
+    "network:wikidata": "Q7258007",
+    "public_transport": "platform",
+    "ref": "15319"
+  }
+},
+{
+  "type": "node",
+  "id": 9166946113,
+  "lat": -43.4783800,
+  "lon": 172.6202800,
+  "tags": {
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Daniels Rd near Hannah Pl",
+    "network": "Metro Christchurch",
+    "network:wikidata": "Q7258007",
+    "public_transport": "platform",
+    "ref": "29182"
+  }
+},
+{
+  "type": "node",
+  "id": 9166946350,
+  "lat": -43.4782600,
+  "lon": 172.6178000,
+  "tags": {
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Daniels Rd",
+    "network": "Metro Christchurch",
+    "network:wikidata": "Q7258007",
+    "public_transport": "platform",
+    "ref": "29195"
+  }
+},
+{
+  "type": "node",
+  "id": 9166946387,
+  "lat": -43.4783700,
+  "lon": 172.6174200,
+  "tags": {
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Daniels Rd",
+    "network": "Metro Christchurch",
+    "network:wikidata": "Q7258007",
+    "public_transport": "platform",
+    "ref": "29900"
+  }
+},
+{
+  "type": "node",
+  "id": 9166946513,
+  "lat": -43.4772300,
+  "lon": 172.6167400,
+  "tags": {
+    "bus": "yes",
+    "highway": "bus_stop",
+    "name": "Main North Rd near Manse Pl",
+    "network": "Metro Christchurch",
+    "network:wikidata": "Q7258007",
+    "public_transport": "platform",
+    "ref": "13347"
+  }
+}
+
+  ]
+}
