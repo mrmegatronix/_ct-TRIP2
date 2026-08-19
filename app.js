@@ -5,11 +5,17 @@ const RELEVANT_ROUTES = ['1', '95', '125'];
 // Venue Location
 const venueCoords = [-43.47813787786105, 172.61740700674628];
 
-// Map Initialization
+// Map Initialization - Dashboard Mode (No interactions)
 const map = L.map('map', {
     center: venueCoords,
     zoom: 17,
-    zoomControl: false // Disable zoom control for cleaner dashboard look
+    zoomControl: false,
+    dragging: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false,
+    touchZoom: false
 });
 
 // Add Dark Theme Map Tiles (CartoDB Dark Matter without labels)
@@ -67,14 +73,13 @@ const stopIcon = L.divIcon({
 const popups = {};
 const stopMarkers = {};
 const walkingPaths = {};
+const allStopCoords = [venueCoords]; // Keep track of coordinates to fit map
 
 // Add Bus Stops, Popups, and Walking Lines
 for (const [key, stop] of Object.entries(stops)) {
     const marker = L.marker(stop.coords, { icon: stopIcon }).addTo(map);
     stopMarkers[key] = marker;
-    
-    // Store HTML for the sidebar
-    popups[key] = `<div class="eta-card" id="card-${key}"><h3>${stop.name}</h3><div style="text-align:center; padding:10px;">Loading ETAs...</div></div>`;
+    allStopCoords.push(stop.coords);
     
     // Calculate Walking Distance and ETA
     const stopLatLng = L.latLng(stop.coords);
@@ -82,7 +87,14 @@ for (const [key, stop] of Object.entries(stops)) {
     const dist = Math.round(venueLatLng.distanceTo(stopLatLng));
     const walkingTime = Math.ceil(dist / 84); // ~1.4 m/s average walking speed
     
-    // Draw Red Walking Line
+    // Store HTML for the sidebar with walking time included
+    popups[key] = `<div class="eta-card" id="card-${key}">
+        <h3>${stop.name}</h3>
+        <p style="color: #ff4d4d; font-size: 1.2rem; font-weight: bold; text-align: center; margin: 5px 0 15px 0; letter-spacing: 1px;">Walk: ${dist}m (${walkingTime} min)</p>
+        <div style="text-align:center; padding:10px;">Loading ETAs...</div>
+    </div>`;
+    
+    // Draw Red Walking Line (no tooltip to prevent clipping)
     const walkLine = L.polyline([venueCoords, stop.coords], {
         color: '#ff4d4d',
         weight: 3,
@@ -91,14 +103,11 @@ for (const [key, stop] of Object.entries(stops)) {
         className: 'walking-path'
     }).addTo(map);
     
-    walkLine.bindTooltip(`Walk: ${dist}m (${walkingTime} min)`, {
-        permanent: true,
-        className: 'walking-tooltip',
-        direction: 'center'
-    });
-    
     walkingPaths[key] = walkLine;
 }
+
+// Automatically zoom and crop the map to fit exactly all 4 stops and the tavern
+map.fitBounds(L.latLngBounds(allStopCoords), { padding: [100, 100] });
 
 // Draw Bus Routes with Directional Arrows
 const mainNorthRoute = [
@@ -137,10 +146,10 @@ const mainNorthRoute_Northbound = offsetRoute(mainNorthRouteRev, 0, -0.000502);
 const mainNorthRoute_Southbound = offsetRoute(mainNorthRoute, 0, -0.000212);
 
 // Route 125 path goes SouthWest to NorthEast
-// Eastbound travels SW to NE exactly through 'east' stop
-const route125Path_Eastbound = offsetRoute(route125Path, 0.000048, 0);
-// Westbound travels NE to SW exactly through 'west' stop
-const route125Path_Westbound = offsetRoute(route125PathRev, -0.000062, 0);
+// Eastbound travels SW to NE on NorthWest side
+const route125Path_Eastbound = offsetRoute(route125Path, 0.00006, -0.00006);
+// Westbound travels NE to SW on SouthEast side
+const route125Path_Westbound = offsetRoute(route125PathRev, -0.00006, 0.00006);
 
 const mainLine = L.polyline(mainNorthRoute_Southbound, { color: '#3498db', weight: 6, opacity: 0 }).addTo(map); 
 const mainLineRev = L.polyline(mainNorthRoute_Northbound, { color: '#3498db', weight: 6, opacity: 0 }).addTo(map);
