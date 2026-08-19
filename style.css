@@ -191,18 +191,29 @@ body, html {
     backdrop-filter: blur(8px);
 }
 
-/* Clean White Title */
+/* Epic Metallic Chrome Title */
 .main-title {
     position: absolute;
     top: 30px;
     left: 50px;
     z-index: 1000;
     margin: 0;
-    font-size: 56px;
+    font-size: 64px;
     font-weight: 900;
     text-transform: uppercase;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    letter-spacing: 2px;
-    color: #ffffff;
-    text-shadow: 0px 4px 15px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.6);
+    font-family: 'Arial Black', Impact, sans-serif;
+    letter-spacing: 4px;
+    background: linear-gradient(
+        to bottom,
+        #ffffff 0%,
+        #e6e6e6 26%,
+        #cccccc 48%,
+        #595959 50%,
+        #333333 53%,
+        #cccccc 75%,
+        #ffffff 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(4px 4px 10px rgba(0,0,0,1)) drop-shadow(0px 0px 5px rgba(102, 252, 241, 0.5));
 }

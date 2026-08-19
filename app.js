@@ -75,8 +75,9 @@ for (const [key, stop] of Object.entries(stops)) {
     
     // Create an empty popup with specific styling
     const popup = L.popup({
-        autoClose: false,
+        autoClose: true,
         closeOnClick: false,
+        autoPan: false,
         className: 'custom-popup',
         maxWidth: 800
     })
@@ -193,7 +194,7 @@ function cyclePanels() {
     
     // Hide all popups and walking lines
     for (const key of stopKeys) {
-        map.closePopup(popups[key]);
+        stopMarkers[key].closePopup();
         walkingPaths[key].setStyle({ opacity: 0 });
         walkingPaths[key].closeTooltip();
     }
@@ -432,23 +433,27 @@ async function initVehicleTracking() {
     }
 }
 
-// Anchor view so it doesn't jump around
-const allBounds = L.latLngBounds([
-    venueCoords, libraryCoords,
-    ...Object.values(stops).map(s => s.coords)
-]);
-map.fitBounds(allBounds, {
-    paddingTopLeft: [350, 50],
-    paddingBottomRight: [50, 50]
-});
+// Anchor map permanently to venue
+map.setView(venueCoords, 17);
 
 // Clock Logic
 function updateClock() {
     const now = new Date();
-    const timeString = now.toLocaleTimeString('en-NZ', { hour: '2-digit', minute: '2-digit' });
-    document.getElementById('clock').innerText = timeString;
+    let hours = now.getHours();
+    let minutes = now.getMinutes().toString().padStart(2, '0');
+    let ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    hours = hours.toString().padStart(2, '0');
+    
+    // Blinking colon based on seconds
+    const showColon = now.getSeconds() % 2 === 0;
+    const colon = showColon ? ':' : '<span style="visibility: hidden;">:</span>';
+    
+    const timeString = `${hours}${colon}${minutes} <span style="font-size: 0.6em">${ampm}</span>`;
+    document.getElementById('clock').innerHTML = timeString;
 }
 setInterval(updateClock, 1000);
-updateClock();
+updateClock(); // run once immediately
 
 initVehicleTracking();
