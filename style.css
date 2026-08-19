@@ -15,12 +15,11 @@ body, html {
     color: #fff;
     padding: 12px 40px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
     border-bottom: 2px solid #45a29e;
     flex-shrink: 0;
-    gap: 10px;
 }
 
 .app-main {

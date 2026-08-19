@@ -1,7 +1,3 @@
-// API Configuration
-const API_KEY = '5vgJIJQTkmeJXN7h2n9drK0UuqrSoWOW';
-const RELEVANT_ROUTES = ['1', '95', '125'];
-
 // Venue Location
 const venueCoords = [-43.47813787786105, 172.61740700674628];
 
@@ -53,10 +49,10 @@ L.marker(libraryCoords, { icon: libraryIcon }).addTo(map);
 
 // Bus Stop Definitions
 const stops = {
-    north: { name: 'North (Main North Rd)', coords: [-43.477230, 172.616740], id: '13347' },
-    south: { name: 'South (Main North Rd)', coords: [-43.477250, 172.617030], id: '15319' },
-    east:  { name: 'East (Daniels Rd)', coords: [-43.478260, 172.617800], id: '29195' },
-    west:  { name: 'West (Daniels Rd)', coords: [-43.478370, 172.617420], id: '29900' }
+    north: { name: 'North (Main North Rd)', coords: [-43.477230, 172.616740], id: '13347' }, // West side
+    south: { name: 'South (Main North Rd)', coords: [-43.477250, 172.617030], id: '15319' }, // East side
+    east:  { name: 'East (Daniels Rd)', coords: [-43.478260, 172.617800], id: '29195' }, // North side
+    west:  { name: 'West (Daniels Rd)', coords: [-43.478370, 172.617420], id: '29900' }  // South side
 };
 
 // Panel positioning: which side of the stop should the panel appear?
@@ -83,17 +79,20 @@ for (const [key, stop] of Object.entries(stops)) {
     const marker = L.marker(stop.coords, { icon: stopIcon }).addTo(map);
     stopMarkers[key] = marker;
     
+    // Calculate Walking Distance and ETA
     const stopLatLng = L.latLng(stop.coords);
     const venueLatLng = L.latLng(venueCoords);
     const dist = Math.round(venueLatLng.distanceTo(stopLatLng));
     const walkingTime = Math.ceil(dist / 84);
     
+    // Store HTML — walking info is inside the panel
     popups[key] = `<div class="eta-card" id="card-${key}">
         <h3>${stop.name}</h3>
-        <p class="walk-info">🚶 ${dist}m · ${walkingTime} min walk</p>
+        <p class="walk-info">🚶 ${dist} meters (${walkingTime} min walk)</p>
         <div class="eta-loading">Loading ETAs...</div>
     </div>`;
     
+    // Draw Red Walking Line (no tooltip)
     const walkLine = L.polyline([venueCoords, stop.coords], {
         color: '#ff4d4d',
         weight: 3,
@@ -107,8 +106,11 @@ for (const [key, stop] of Object.entries(stops)) {
 
 // ============================================================
 // REAL OSM ROAD GEOMETRY — actual carriageway coordinates
+// Main North Road is a divided highway with separate one-way roads.
+// Source: OpenStreetMap Overpass API
 // ============================================================
 
+// SOUTHBOUND carriageway (East side, heading toward City Centre)
 const mainNorthRoute_Southbound = [
     [-43.4739075, 172.6172178],
     [-43.4742337, 172.6171929],
@@ -131,6 +133,7 @@ const mainNorthRoute_Southbound = [
     [-43.4835056, 172.6164571]
 ];
 
+// NORTHBOUND carriageway (West side, heading toward Belfast)
 const mainNorthRoute_Northbound = [
     [-43.4809881, 172.6165197],
     [-43.4798471, 172.6166076],
@@ -222,7 +225,7 @@ setInterval(() => {
     });
 }, 50);
 
-// Carousel Logic
+// Carousel Logic (Rotate active panel every 15 seconds)
 const stopKeys = Object.keys(stops);
 let currentStopIndex = 0;
 
@@ -238,15 +241,18 @@ function positionPanel(key) {
 function cyclePanels() {
     const activeKey = stopKeys[currentStopIndex];
     
+    // Hide all walking lines
     for (const key of stopKeys) {
         walkingPaths[key].setStyle({ opacity: 0 });
     }
     
+    // Hide all routes
     [mainLine, mainLineRev, route95Line, route95LineRev, danielsLine, danielsLineRev].forEach(line => {
         line.setStyle({ opacity: 0 });
     });
     activeDecorators.forEach(d => map.removeLayer(d.deco));
     
+    // Update and position the panel
     const board = document.getElementById('arrivals-board');
     board.style.display = 'block';
     board.innerHTML = popups[activeKey];
@@ -254,6 +260,7 @@ function cyclePanels() {
     
     walkingPaths[activeKey].setStyle({ opacity: 0.9 });
     
+    // Show only active routes
     if (activeKey === 'north') {
         mainLineRev.setStyle({ opacity: 1 });
         route95LineRev.setStyle({ opacity: 1 });
@@ -275,26 +282,32 @@ function cyclePanels() {
     currentStopIndex = (currentStopIndex + 1) % stopKeys.length;
 }
 
-// Client-Side Data Fetching Logic
-async function fetchETAs() {
+// Static Mock Data for GitHub Pages
+const mockArrivals = {
+    north: [
+        { route: '1', destination: 'Rangiora', time: 'Due' },
+        { route: '95', destination: 'Pegasus', time: '5 min' },
+        { route: '1', destination: 'Rangiora', time: '15 min' }
+    ],
+    south: [
+        { route: '1', destination: 'Cashmere', time: '2 min' },
+        { route: '95', destination: 'City', time: '10 min' }
+    ],
+    east: [
+        { route: '125', destination: 'Redwood', time: '7 min' }
+    ],
+    west: [
+        { route: '125', destination: 'Westlake', time: '12 min' }
+    ]
+};
+
+// Data Fetching Logic (Static)
+function fetchETAs() {
     try {
-        const timestamp = Date.now();
+        const data = mockArrivals;
+        
         for (const [key, stop] of Object.entries(stops)) {
-            const response = await fetch(`https://go.metroinfo.co.nz/mtbp/service/ui/eta/stop/Metro%20Canterbury:${stop.id}/${timestamp}/200?locale=en-gb`, {
-                headers: { 'authorization': `ApiKey ${API_KEY}` }
-            });
-            const data = await response.json();
-            
-            let allArrivals = [];
-            for (const pattern of Object.values(data)) {
-                if (Array.isArray(pattern)) {
-                    allArrivals = allArrivals.concat(pattern);
-                }
-            }
-            
-            allArrivals.sort((a, b) => new Date(a.realtimeDeparture || a.scheduledDeparture) - new Date(b.realtimeDeparture || b.scheduledDeparture));
-            const upcoming = allArrivals.slice(0, 5);
-            
+            const stopData = data[key];
             const stopLatLng = L.latLng(stop.coords);
             const venueLatLng = L.latLng(venueCoords);
             const dist = Math.round(venueLatLng.distanceTo(stopLatLng));
@@ -303,29 +316,14 @@ async function fetchETAs() {
             let html = `<h3>${stop.name}</h3>`;
             html += `<p class="walk-info">🚶 ${dist}m · ${walkingTime} min walk</p>`;
             
-            if (upcoming.length > 0) {
-                upcoming.forEach(eta => {
-                    let routeNum = 'Unknown';
-                    if (eta.routeId.includes('1_0854')) routeNum = '1';
-                    if (eta.routeId.includes('95_7946')) routeNum = '95';
-                    if (eta.routeId.includes('125_6143')) routeNum = '125';
-                    
-                    const dt = new Date(eta.realtimeDeparture || eta.scheduledDeparture);
-                    const diffMs = dt - new Date();
-                    const diffMins = Math.round(diffMs / 60000);
-                    let timeStr = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    if (diffMins <= 60 && diffMins > 0) {
-                        timeStr = `${diffMins} min`;
-                    } else if (diffMins <= 0) {
-                        timeStr = 'Due';
-                    }
-                    
-                    const routeClass = `route-${routeNum}`;
+            if (stopData && stopData.length > 0) {
+                stopData.forEach(eta => {
+                    const routeClass = `route-${eta.route}`;
                     html += `
                     <div class="eta-row">
-                        <span class="eta-route ${routeClass}">${routeNum}</span>
-                        <span class="eta-dest">${eta.headSign}</span>
-                        <span class="eta-time">${timeStr}</span>
+                        <span class="eta-route ${routeClass}">${eta.route}</span>
+                        <span class="eta-dest">${eta.destination}</span>
+                        <span class="eta-time">${eta.time}</span>
                     </div>`;
                 });
             } else {
@@ -335,139 +333,16 @@ async function fetchETAs() {
             popups[key] = `<div class="eta-card" id="card-${key}">${html}</div>`;
         }
     } catch (err) {
-        console.error('Error fetching arrivals:', err);
+        console.error('Error rendering arrivals:', err);
     }
 }
 
-// Start polling data
-setInterval(fetchETAs, 10000);
+// Render data immediately
 setTimeout(fetchETAs, 1000);
 
 // Start Carousel
 setInterval(cyclePanels, 15000);
 setTimeout(cyclePanels, 1500);
-
-// --- LIVE VEHICLE TRACKING ---
-let activePatterns = [];
-const busMarkers = {};
-
-function getBusIcon(route) {
-    let color = '#45a29e';
-    if (route === '1') color = '#3498db';
-    if (route === '95') color = '#9b59b6';
-    if (route === '125') color = '#2ecc71';
-    
-    return L.divIcon({
-        className: 'live-bus-icon',
-        html: `<div style="
-            background-color: ${color}; 
-            width: 24px; 
-            height: 24px; 
-            border-radius: 50%; 
-            border: 2px solid #0b0c10;
-            box-shadow: 0 0 10px ${color};
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 11px;
-            color: white;
-        ">${route}</div>`,
-        iconSize: [28, 28],
-        iconAnchor: [14, 14]
-    });
-}
-
-async function discoverPatterns() {
-    try {
-        const res = await fetch('https://go.metroinfo.co.nz/mtbp/service/ui/master-data/en-gb', {
-            headers: { 'authorization': `ApiKey ${API_KEY}` }
-        });
-        const data = await res.json();
-        
-        const validRouteIds = Object.values(data.routes)
-            .filter(r => RELEVANT_ROUTES.includes(r.shortName))
-            .map(r => r.id);
-            
-        activePatterns = Object.values(data.routePatterns)
-            .filter(p => validRouteIds.includes(p.routeId))
-            .map(p => p.id);
-            
-        console.log(`Discovered ${activePatterns.length} active patterns for routes 1, 95, 125.`);
-    } catch (e) {
-        console.error('Failed to discover patterns:', e);
-    }
-}
-
-async function fetchLiveVehicles() {
-    if (activePatterns.length === 0) return;
-    
-    try {
-        let allVehicles = {};
-        const fetchPromises = activePatterns.map(patternId => 
-            fetch(`https://go.metroinfo.co.nz/mtbp/service/ui/eta/vehicles-on-pattern/${encodeURIComponent(patternId)}`, {
-                headers: { 'authorization': `ApiKey ${API_KEY}` }
-            })
-            .then(r => r.json())
-            .catch(e => null)
-        );
-        
-        const results = await Promise.all(fetchPromises);
-        
-        for (const data of results) {
-            if (data && Array.isArray(data)) {
-                data.forEach(vehicle => {
-                    let routeNum = 'Unknown';
-                    if (vehicle.routeId.includes('1_0854')) routeNum = '1';
-                    if (vehicle.routeId.includes('95_7946')) routeNum = '95';
-                    if (vehicle.routeId.includes('125_6143')) routeNum = '125';
-                    
-                    allVehicles[vehicle.id] = {
-                        id: vehicle.id,
-                        label: vehicle.label,
-                        lat: vehicle.latitude,
-                        lng: vehicle.longitude,
-                        route: routeNum,
-                        status: vehicle.stopStatus
-                    };
-                });
-            }
-        }
-        
-        const activeIds = new Set(Object.keys(allVehicles));
-        
-        for (const [id, data] of Object.entries(allVehicles)) {
-            if (busMarkers[id]) {
-                busMarkers[id].setLatLng([data.lat, data.lng]);
-            } else {
-                const marker = L.marker([data.lat, data.lng], {
-                    icon: getBusIcon(data.route),
-                    zIndexOffset: 800
-                }).addTo(map);
-                marker.bindTooltip(`Bus ${data.label} (Route ${data.route})`, { direction: 'top', className: 'bus-tooltip' });
-                busMarkers[id] = marker;
-            }
-        }
-        
-        for (const id in busMarkers) {
-            if (!activeIds.has(id)) {
-                map.removeLayer(busMarkers[id]);
-                delete busMarkers[id];
-            }
-        }
-        
-    } catch (err) {
-        console.error('Error fetching live vehicles:', err);
-    }
-}
-
-async function initVehicleTracking() {
-    await discoverPatterns();
-    if (activePatterns.length > 0) {
-        await fetchLiveVehicles();
-        setInterval(fetchLiveVehicles, 5000);
-    }
-}
 
 // Clock Logic (BLINKING COLONS)
 function updateClock() {
@@ -479,6 +354,7 @@ function updateClock() {
     hours = hours ? hours : 12;
     hours = hours.toString().padStart(2, '0');
     
+    // Blinking colon based on seconds
     const showColon = now.getSeconds() % 2 === 0;
     const colon = showColon ? ':' : '<span style="visibility: hidden;">:</span>';
     
@@ -487,5 +363,3 @@ function updateClock() {
 }
 setInterval(updateClock, 1000);
 updateClock();
-
-initVehicleTracking();
