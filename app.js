@@ -120,15 +120,31 @@ const route125Path = [
 const mainNorthRouteRev = [...mainNorthRoute].reverse();
 const route125PathRev = [...route125Path].reverse();
 
-const mainLine = L.polyline(mainNorthRoute, { color: '#3498db', weight: 6, opacity: 0 }).addTo(map); 
-const mainLineRev = L.polyline(mainNorthRouteRev, { color: '#3498db', weight: 6, opacity: 0 }).addTo(map);
+function offsetRoute(routePoints, latOffset, lngOffset) {
+    return routePoints.map(point => [point[0] + latOffset, point[1] + lngOffset]);
+}
+
+// Drive on Left (NZ):
+// Northbound travels South-to-North on West side (negative longitude)
+const mainNorthRoute_Northbound = offsetRoute(mainNorthRouteRev, 0, -0.0001);
+// Southbound travels North-to-South on East side (positive longitude)
+const mainNorthRoute_Southbound = offsetRoute(mainNorthRoute, 0, 0.0001);
+
+// Route 125 path goes SouthWest to NorthEast
+// Eastbound travels SW to NE on NorthWest side
+const route125Path_Eastbound = offsetRoute(route125Path, 0.00006, -0.00006);
+// Westbound travels NE to SW on SouthEast side
+const route125Path_Westbound = offsetRoute(route125PathRev, -0.00006, 0.00006);
+
+const mainLine = L.polyline(mainNorthRoute_Southbound, { color: '#3498db', weight: 6, opacity: 0 }).addTo(map); 
+const mainLineRev = L.polyline(mainNorthRoute_Northbound, { color: '#3498db', weight: 6, opacity: 0 }).addTo(map);
 
 // Use dashArray so Route 95 naturally blends with Route 1 on the exact same road
-const route95Line = L.polyline(mainNorthRoute, { color: '#9b59b6', weight: 6, opacity: 0, dashArray: '15, 15' }).addTo(map);
-const route95LineRev = L.polyline(mainNorthRouteRev, { color: '#9b59b6', weight: 6, opacity: 0, dashArray: '15, 15' }).addTo(map);
+const route95Line = L.polyline(mainNorthRoute_Southbound, { color: '#9b59b6', weight: 6, opacity: 0, dashArray: '15, 15' }).addTo(map);
+const route95LineRev = L.polyline(mainNorthRoute_Northbound, { color: '#9b59b6', weight: 6, opacity: 0, dashArray: '15, 15' }).addTo(map);
 
-const danielsLine = L.polyline(route125Path, { color: '#2ecc71', weight: 6, opacity: 0 }).addTo(map);
-const danielsLineRev = L.polyline(route125PathRev, { color: '#2ecc71', weight: 6, opacity: 0 }).addTo(map);
+const danielsLine = L.polyline(route125Path_Eastbound, { color: '#2ecc71', weight: 6, opacity: 0 }).addTo(map);
+const danielsLineRev = L.polyline(route125Path_Westbound, { color: '#2ecc71', weight: 6, opacity: 0 }).addTo(map);
 
 // Add Custom Bright Street Labels
 L.marker([-43.4735, 172.6163], {
