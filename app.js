@@ -241,17 +241,17 @@ function positionPanel(key) {
     let top = stopPixel.y;
     
     if (key === 'north') {
-        left = stopPixel.x - width - 40;
+        left = stopPixel.x + 40; // Right of the North stop
         top = stopPixel.y - height / 2;
     } else if (key === 'south') {
-        left = stopPixel.x + 40;
+        left = stopPixel.x + 40; // Right of the South stop
         top = stopPixel.y - height / 2;
     } else if (key === 'east') {
-        left = stopPixel.x - width / 2;
+        left = stopPixel.x - width / 2; // Above the East stop
         top = stopPixel.y - height - 40;
     } else if (key === 'west') {
-        left = stopPixel.x - width / 2;
-        top = stopPixel.y + 40;
+        left = stopPixel.x - width - 40; // Left of the West stop
+        top = stopPixel.y - height / 2;
     }
     
     if (left < 20) left = 20;
