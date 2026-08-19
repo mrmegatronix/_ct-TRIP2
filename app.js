@@ -261,17 +261,17 @@ function positionPanel(key) {
     let top = stopPixel.y;
     
     if (key === 'north') {
-        left = stopPixel.x + 40; // Right of the North stop
+        left = stopPixel.x - width - 60; // Push West, away from Main North Rd
         top = stopPixel.y - height / 2;
     } else if (key === 'south') {
-        left = stopPixel.x + 40; // Right of the South stop
+        left = stopPixel.x + 60; // Push East, away from Main North Rd
         top = stopPixel.y - height / 2;
     } else if (key === 'east') {
-        left = stopPixel.x - width / 2; // Above the East stop
-        top = stopPixel.y - height - 40;
+        left = stopPixel.x + 40; // Push East, away from intersection
+        top = stopPixel.y - height - 40; // Push North, away from Daniels Rd
     } else if (key === 'west') {
-        left = stopPixel.x - width - 40; // Left of the West stop
-        top = stopPixel.y - height / 2;
+        left = stopPixel.x + 40; // Push East, away from intersection
+        top = stopPixel.y + 40; // Push South, away from Daniels Rd
     }
     
     if (left < 20) left = 20;
@@ -285,6 +285,10 @@ function positionPanel(key) {
 
 function cyclePanels() {
     const activeKey = stopKeys[currentStopIndex];
+    const board = document.getElementById('arrivals-board');
+    
+    // Fade out board
+    board.style.opacity = '0';
     
     // Hide all walking lines
     for (const key of stopKeys) {
@@ -297,33 +301,46 @@ function cyclePanels() {
     });
     activeDecorators.forEach(d => map.removeLayer(d.deco));
     
-    // Update and position the panel
-    const board = document.getElementById('arrivals-board');
-    board.style.display = 'block';
-    board.innerHTML = popups[activeKey];
-    positionPanel(activeKey);
-    updateQRCode(stops[activeKey].id);
+    // Calculate midpoint between Venue and Stop to perfectly frame both
+    const stopLatLng = L.latLng(stops[activeKey].coords);
+    const venueLatLng = L.latLng(venueCoords);
+    const midLat = (stopLatLng.lat + venueLatLng.lat) / 2;
+    const midLng = (stopLatLng.lng + venueLatLng.lng) / 2;
     
-    walkingPaths[activeKey].setStyle({ opacity: 0.9 });
+    // Smoothly fly camera to the midpoint
+    map.flyTo([midLat, midLng], 19, { animate: true, duration: 1.5 });
     
-    // Show only active routes
-    if (activeKey === 'north') {
-        mainLineRev.setStyle({ opacity: 1 });
-        route95LineRev.setStyle({ opacity: 1 });
-        activeDecorators = [decoMainRev, deco95Rev];
-    } else if (activeKey === 'south') {
-        mainLine.setStyle({ opacity: 1 });
-        route95Line.setStyle({ opacity: 1 });
-        activeDecorators = [decoMain, deco95];
-    } else if (activeKey === 'east') {
-        danielsLine.setStyle({ opacity: 1 });
-        activeDecorators = [decoDaniels];
-    } else if (activeKey === 'west') {
-        danielsLineRev.setStyle({ opacity: 1 });
-        activeDecorators = [decoDanielsRev];
-    }
-    
-    activeDecorators.forEach(d => map.addLayer(d.deco));
+    // When the camera arrives, show the UI
+    map.once('moveend', () => {
+        board.style.display = 'block';
+        board.innerHTML = popups[activeKey];
+        positionPanel(activeKey);
+        updateQRCode(stops[activeKey].id);
+        
+        walkingPaths[activeKey].setStyle({ opacity: 0.9 });
+        
+        // Show only active routes
+        if (activeKey === 'north') {
+            mainLineRev.setStyle({ opacity: 1 });
+            route95LineRev.setStyle({ opacity: 1 });
+            activeDecorators = [decoMainRev, deco95Rev];
+        } else if (activeKey === 'south') {
+            mainLine.setStyle({ opacity: 1 });
+            route95Line.setStyle({ opacity: 1 });
+            activeDecorators = [decoMain, deco95];
+        } else if (activeKey === 'east') {
+            danielsLine.setStyle({ opacity: 1 });
+            activeDecorators = [decoDaniels];
+        } else if (activeKey === 'west') {
+            danielsLineRev.setStyle({ opacity: 1 });
+            activeDecorators = [decoDanielsRev];
+        }
+        
+        activeDecorators.forEach(d => map.addLayer(d.deco));
+        
+        // Fade in board
+        board.style.opacity = '1';
+    });
     
     currentStopIndex = (currentStopIndex + 1) % stopKeys.length;
 }
