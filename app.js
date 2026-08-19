@@ -230,6 +230,24 @@ setInterval(() => {
 const stopKeys = Object.keys(stops);
 let currentStopIndex = 0;
 
+let qrcode = null;
+function updateQRCode(stopId) {
+    const url = `https://go.metroinfo.co.nz/mtv/?stop=${stopId}`;
+    if (!qrcode) {
+        qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: url,
+            width: 128,
+            height: 128,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+    } else {
+        qrcode.clear();
+        qrcode.makeCode(url);
+    }
+}
+
 function positionPanel(key) {
     const board = document.getElementById('arrivals-board');
     const stopPixel = map.latLngToContainerPoint(stops[key].coords);
@@ -284,6 +302,7 @@ function cyclePanels() {
     board.style.display = 'block';
     board.innerHTML = popups[activeKey];
     positionPanel(activeKey);
+    updateQRCode(stops[activeKey].id);
     
     walkingPaths[activeKey].setStyle({ opacity: 0.9 });
     
