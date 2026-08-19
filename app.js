@@ -89,7 +89,8 @@ for (const [key, stop] of Object.entries(stops)) {
         color: '#ff4d4d',
         weight: 3,
         dashArray: '5, 10',
-        opacity: 0 // Hidden initially
+        opacity: 0, // Hidden initially
+        className: 'walking-path'
     }).addTo(map);
     
     walkLine.bindTooltip(`Walk: ${dist}m (${walkingTime} min)`, {
@@ -121,16 +122,16 @@ const route125Path = [
 // Draw main routes
 const mainNorthRouteReverse = [...mainNorthRoute].reverse();
 const mainLine = L.polyline(mainNorthRoute, { color: '#3498db', weight: 6, opacity: 0.2 }).addTo(map); // Blue for Route 1
-const mainLineRev = L.polyline(mainNorthRouteReverse, { opacity: 0 }).addTo(map);
+const mainLineRev = L.polyline(mainNorthRouteReverse, { color: '#3498db', weight: 6, opacity: 0.2 }).addTo(map);
 
 const route95Path = mainNorthRoute.map(coord => [coord[0], coord[1] - 0.00005]);
 const route95PathReverse = [...route95Path].reverse();
 const route95Line = L.polyline(route95Path, { color: '#9b59b6', weight: 6, opacity: 0.2 }).addTo(map); // Purple for Route 95
-const route95LineRev = L.polyline(route95PathReverse, { opacity: 0 }).addTo(map);
+const route95LineRev = L.polyline(route95PathReverse, { color: '#9b59b6', weight: 6, opacity: 0.2 }).addTo(map);
 
 const route125PathReverse = [...route125Path].reverse();
 const danielsLine = L.polyline(route125Path, { color: '#2ecc71', weight: 6, opacity: 0.2 }).addTo(map); // Green for Route 125
-const danielsLineRev = L.polyline(route125PathReverse, { opacity: 0 }).addTo(map);
+const danielsLineRev = L.polyline(route125PathReverse, { color: '#2ecc71', weight: 6, opacity: 0.2 }).addTo(map);
 
 // Decorators setup
 function createDeco(line, color, offset) {
@@ -185,8 +186,8 @@ function cyclePanels() {
     }
     
     // Dim all routes and remove decorators
-    [...groupNorth, ...groupDaniels].forEach(line => {
-        if (line.options.opacity !== 0) line.setStyle({ opacity: 0.2 });
+    [mainLine, mainLineRev, route95Line, route95LineRev, danielsLine, danielsLineRev].forEach(line => {
+        line.setStyle({ opacity: 0.2 });
     });
     activeDecorators.forEach(d => map.removeLayer(d.deco));
     
@@ -196,28 +197,23 @@ function cyclePanels() {
     walkingPaths[activeKey].openTooltip();
     
     // Show only active routes at 100% opacity and add their decorators
-    if (activeKey === 'north' || activeKey === 'south') {
-        groupNorth.forEach(line => {
-            if (line.options.opacity !== 0) line.setStyle({ opacity: 1 });
-        });
-        activeDecorators = decosNorth;
-    } else {
-        groupDaniels.forEach(line => {
-            if (line.options.opacity !== 0) line.setStyle({ opacity: 1 });
-        });
-        activeDecorators = decosDaniels;
+    if (activeKey === 'north') {
+        mainLine.setStyle({ opacity: 1 });
+        route95Line.setStyle({ opacity: 1 });
+        activeDecorators = [decoMain, deco95];
+    } else if (activeKey === 'south') {
+        mainLineRev.setStyle({ opacity: 1 });
+        route95LineRev.setStyle({ opacity: 1 });
+        activeDecorators = [decoMainRev, deco95Rev];
+    } else if (activeKey === 'east') {
+        danielsLine.setStyle({ opacity: 1 });
+        activeDecorators = [decoDaniels];
+    } else if (activeKey === 'west') {
+        danielsLineRev.setStyle({ opacity: 1 });
+        activeDecorators = [decoDanielsRev];
     }
     
     activeDecorators.forEach(d => map.addLayer(d.deco));
-    
-    // Smoothly zoom/pan to keep venue, library, and active stop in view
-    const bounds = L.latLngBounds([venueCoords, libraryCoords, stops[activeKey].coords]);
-    map.flyToBounds(bounds, {
-        paddingTopLeft: [280, 50], // Extra padding on top to prevent popup overlapping text
-        paddingBottomRight: [50, 50],
-        duration: 1.5,
-        easeLinearity: 0.25
-    });
     
     currentStopIndex = (currentStopIndex + 1) % stopKeys.length;
 }
@@ -420,5 +416,24 @@ async function initVehicleTracking() {
         setInterval(fetchLiveVehicles, 5000);
     }
 }
+
+// Anchor view so it doesn't jump around
+const allBounds = L.latLngBounds([
+    venueCoords, libraryCoords,
+    ...Object.values(stops).map(s => s.coords)
+]);
+map.fitBounds(allBounds, {
+    paddingTopLeft: [350, 50],
+    paddingBottomRight: [50, 50]
+});
+
+// Clock Logic
+function updateClock() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('en-NZ', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('clock').innerText = timeString;
+}
+setInterval(updateClock, 1000);
+updateClock();
 
 initVehicleTracking();

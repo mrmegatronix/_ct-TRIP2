@@ -18,39 +18,39 @@ body, html {
 /* Custom UI Cards for Bus ETAs */
 .eta-card {
     background: rgba(11, 12, 16, 0.9);
-    border: 1px solid #45a29e;
-    border-radius: 8px;
-    padding: 10px;
+    border: 2px solid #45a29e;
+    border-radius: 12px;
+    padding: 20px;
     color: #fff;
-    min-width: 220px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
+    min-width: 400px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
 }
 
 .eta-card h3 {
-    margin: 0 0 10px 0;
-    font-size: 16px;
+    margin: 0 0 15px 0;
+    font-size: 32px;
     color: #66fcf1;
-    border-bottom: 1px solid #1f2833;
-    padding-bottom: 5px;
+    border-bottom: 2px solid #1f2833;
+    padding-bottom: 10px;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
 }
 
 .eta-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
-    font-size: 14px;
+    margin-bottom: 16px;
+    font-size: 28px;
 }
 
 .eta-route {
     color: #ffffff;
-    padding: 2px 6px;
-    border-radius: 4px;
+    padding: 4px 12px;
+    border-radius: 6px;
     font-weight: bold;
-    min-width: 25px;
+    min-width: 45px;
     text-align: center;
     background: #45a29e; /* default fallback */
 }
@@ -62,16 +62,17 @@ body, html {
 
 .eta-dest {
     flex-grow: 1;
-    margin: 0 10px;
+    margin: 0 15px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 13px;
+    font-size: 26px;
     color: #c5c6c7;
 }
 
 .eta-time {
     font-weight: bold;
+    font-size: 28px;
     color: #66fcf1;
     white-space: nowrap;
 }
@@ -139,10 +140,48 @@ body, html {
     border: none !important;
     box-shadow: none !important;
     font-weight: bold;
-    font-size: 14px;
-    text-shadow: 1px 1px 2px black;
+    font-size: 20px;
+    text-shadow: 2px 2px 4px black;
     direction: ltr;
 }
 .walking-tooltip::before {
     display: none;
+}
+
+.leaflet-tooltip {
+    font-size: 20px !important;
+    font-weight: bold !important;
+}
+
+/* Brighten street names */
+.leaflet-tile-pane {
+    filter: brightness(1.6) contrast(1.1) saturate(1.2);
+}
+
+/* Animate walking dotted line */
+@keyframes dash-animation {
+    to {
+        stroke-dashoffset: -15;
+    }
+}
+
+.walking-path {
+    animation: dash-animation 1s linear infinite;
+}
+
+/* Clock styling for TV display */
+.clock {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    z-index: 1000;
+    font-size: 48px;
+    font-weight: bold;
+    color: #66fcf1;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+    background: rgba(11, 12, 16, 0.8);
+    padding: 15px 30px;
+    border-radius: 12px;
+    border: 2px solid #45a29e;
+    backdrop-filter: blur(8px);
 }
