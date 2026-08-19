@@ -42,37 +42,37 @@ body, html {
 .arrivals-board {
     position: absolute;
     z-index: 1000;
-    width: 320px;
+    width: 440px;
     display: none;
     pointer-events: none;
 }
 
 .eta-card {
     background: rgba(11, 12, 16, 0.92);
-    border: 2px solid #45a29e;
-    border-radius: 10px;
-    padding: 14px 16px;
+    border: 3px solid #45a29e;
+    border-radius: 12px;
+    padding: 20px 24px;
     color: #fff;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(6px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
 }
 
 .eta-card h3 {
-    margin: 0 0 8px 0;
-    font-size: 24px;
+    margin: 0 0 10px 0;
+    font-size: 32px;
     color: #66fcf1;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    border-bottom: 1px solid #45a29e;
-    padding-bottom: 6px;
+    letter-spacing: 2px;
+    border-bottom: 2px solid #45a29e;
+    padding-bottom: 10px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .walk-info {
-    margin: 4px 0 12px 0;
-    font-size: 16px;
+    margin: 6px 0 16px 0;
+    font-size: 22px;
     color: #ff4d4d;
     font-weight: bold;
     text-align: center;
@@ -81,9 +81,9 @@ body, html {
 
 .eta-loading {
     text-align: center;
-    padding: 6px;
+    padding: 10px;
     font-style: italic;
-    font-size: 13px;
+    font-size: 20px;
     color: #888;
 }
 
@@ -91,9 +91,9 @@ body, html {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 0;
+    padding: 10px 0;
     border-bottom: 1px solid rgba(69, 162, 158, 0.2);
-    gap: 8px;
+    gap: 12px;
 }
 
 .eta-row:last-child {
@@ -103,10 +103,10 @@ body, html {
 .eta-route {
     font-weight: bold;
     color: #fff;
-    padding: 4px 12px;
-    border-radius: 6px;
-    font-size: 22px;
-    min-width: 36px;
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 28px;
+    min-width: 46px;
     text-align: center;
     white-space: nowrap;
     flex-shrink: 0;
@@ -121,13 +121,13 @@ body, html {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 22px;
+    font-size: 28px;
     color: #c5c6c7;
 }
 
 .eta-time {
     font-weight: bold;
-    font-size: 24px;
+    font-size: 32px;
     color: #66fcf1;
     white-space: nowrap;
     flex-shrink: 0;
