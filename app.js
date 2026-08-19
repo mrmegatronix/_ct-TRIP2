@@ -27,8 +27,20 @@ const venueIcon = L.icon({
     className: 'venue-logo'
 });
 
-L.marker(venueCoords, { icon: venueIcon, zIndexOffset: 1000 }).addTo(map)
-    .bindPopup('<b>Coasters Tavern</b><br>1 Daniels Road');
+L.marker(venueCoords, { icon: venueIcon, zIndexOffset: 1000 })
+    .bindTooltip("Coasters Tavern", { permanent: true, direction: "right", className: "venue-tooltip" })
+    .addTo(map);
+
+const libraryCoords = [-43.4774150, 172.6164750];
+const libraryIcon = L.divIcon({
+    className: 'venue-icon',
+    html: '📚',
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
+});
+L.marker(libraryCoords, { icon: libraryIcon })
+    .bindTooltip("Redwood Library", { permanent: true, direction: "top", className: "venue-tooltip" })
+    .addTo(map);
 
 // Bus Stop Definitions
 const stops = {
@@ -108,36 +120,55 @@ const route125Path = [
 
 // Draw main routes
 const mainNorthRouteReverse = [...mainNorthRoute].reverse();
-const mainLine = L.polyline(mainNorthRoute, { color: '#3498db', weight: 6, opacity: 1 }); // Blue for Route 1
-const mainLineRev = L.polyline(mainNorthRouteReverse, { opacity: 0 });
+const mainLine = L.polyline(mainNorthRoute, { color: '#3498db', weight: 6, opacity: 0.2 }).addTo(map); // Blue for Route 1
+const mainLineRev = L.polyline(mainNorthRouteReverse, { opacity: 0 }).addTo(map);
 
 const route95Path = mainNorthRoute.map(coord => [coord[0], coord[1] - 0.00005]);
 const route95PathReverse = [...route95Path].reverse();
-const route95Line = L.polyline(route95Path, { color: '#9b59b6', weight: 6, opacity: 1 }); // Purple for Route 95
-const route95LineRev = L.polyline(route95PathReverse, { opacity: 0 });
+const route95Line = L.polyline(route95Path, { color: '#9b59b6', weight: 6, opacity: 0.2 }).addTo(map); // Purple for Route 95
+const route95LineRev = L.polyline(route95PathReverse, { opacity: 0 }).addTo(map);
 
 const route125PathReverse = [...route125Path].reverse();
-const danielsLine = L.polyline(route125Path, { color: '#2ecc71', weight: 6, opacity: 1 }); // Green for Route 125
-const danielsLineRev = L.polyline(route125PathReverse, { opacity: 0 });
+const danielsLine = L.polyline(route125Path, { color: '#2ecc71', weight: 6, opacity: 0.2 }).addTo(map); // Green for Route 125
+const danielsLineRev = L.polyline(route125PathReverse, { opacity: 0 }).addTo(map);
 
-// Group routes and their arrows into LayerGroups
-const mainNorthGroup = L.layerGroup([
-    mainLine, mainLineRev,
-    L.polylineDecorator(mainLine, { patterns: [{ offset: 0, repeat: 100, symbol: L.Symbol.arrowHead({pixelSize: 15, pathOptions: {fillOpacity: 1, weight: 0, color: '#3498db'}}) }] }),
-    L.polylineDecorator(mainLineRev, { patterns: [{ offset: 50, repeat: 100, symbol: L.Symbol.arrowHead({pixelSize: 15, pathOptions: {fillOpacity: 1, weight: 0, color: '#3498db'}}) }] })
-]);
+// Decorators setup
+function createDeco(line, color, offset) {
+    return {
+        deco: L.polylineDecorator(line, { patterns: [] }),
+        color: color,
+        offset: offset
+    };
+}
 
-const route95Group = L.layerGroup([
-    route95Line, route95LineRev,
-    L.polylineDecorator(route95Line, { patterns: [{ offset: 25, repeat: 100, symbol: L.Symbol.arrowHead({pixelSize: 15, pathOptions: {fillOpacity: 1, weight: 0, color: '#9b59b6'}}) }] }),
-    L.polylineDecorator(route95LineRev, { patterns: [{ offset: 75, repeat: 100, symbol: L.Symbol.arrowHead({pixelSize: 15, pathOptions: {fillOpacity: 1, weight: 0, color: '#9b59b6'}}) }] })
-]);
+const decoMain = createDeco(mainLine, '#3498db', 0);
+const decoMainRev = createDeco(mainLineRev, '#3498db', 50);
+const deco95 = createDeco(route95Line, '#9b59b6', 25);
+const deco95Rev = createDeco(route95LineRev, '#9b59b6', 75);
+const decoDaniels = createDeco(danielsLine, '#2ecc71', 10);
+const decoDanielsRev = createDeco(danielsLineRev, '#2ecc71', 60);
 
-const danielsGroup = L.layerGroup([
-    danielsLine, danielsLineRev,
-    L.polylineDecorator(danielsLine, { patterns: [{ offset: 10, repeat: 100, symbol: L.Symbol.arrowHead({pixelSize: 15, pathOptions: {fillOpacity: 1, weight: 0, color: '#2ecc71'}}) }] }),
-    L.polylineDecorator(danielsLineRev, { patterns: [{ offset: 60, repeat: 100, symbol: L.Symbol.arrowHead({pixelSize: 15, pathOptions: {fillOpacity: 1, weight: 0, color: '#2ecc71'}}) }] })
-]);
+const groupNorth = [mainLine, mainLineRev, route95Line, route95LineRev];
+const decosNorth = [decoMain, decoMainRev, deco95, deco95Rev];
+
+const groupDaniels = [danielsLine, danielsLineRev];
+const decosDaniels = [decoDaniels, decoDanielsRev];
+
+let activeDecorators = [];
+let arrowOffset = 0;
+
+setInterval(() => {
+    arrowOffset = (arrowOffset + 2) % 100;
+    activeDecorators.forEach(d => {
+        if (map.hasLayer(d.deco)) {
+            d.deco.setPatterns([{ 
+                offset: ((arrowOffset + d.offset) % 100) + 'px', 
+                repeat: '100px', 
+                symbol: L.Symbol.arrowHead({pixelSize: 15, pathOptions: {fillOpacity: 1, weight: 0, color: d.color}}) 
+            }]);
+        }
+    });
+}, 50); // 20 frames per second smooth animation
 
 // Carousel Logic (Rotate active panel every 15 seconds)
 const stopKeys = Object.keys(stops);
@@ -153,28 +184,36 @@ function cyclePanels() {
         walkingPaths[key].closeTooltip();
     }
     
-    // Hide all routes by removing their groups
-    map.removeLayer(mainNorthGroup);
-    map.removeLayer(route95Group);
-    map.removeLayer(danielsGroup);
+    // Dim all routes and remove decorators
+    [...groupNorth, ...groupDaniels].forEach(line => {
+        if (line.options.opacity !== 0) line.setStyle({ opacity: 0.2 });
+    });
+    activeDecorators.forEach(d => map.removeLayer(d.deco));
     
     // Highlight Active Stop
     stopMarkers[activeKey].openPopup();
     walkingPaths[activeKey].setStyle({ opacity: 0.9 });
     walkingPaths[activeKey].openTooltip();
     
-    // Show only active routes
+    // Show only active routes at 100% opacity and add their decorators
     if (activeKey === 'north' || activeKey === 'south') {
-        map.addLayer(mainNorthGroup);
-        map.addLayer(route95Group);
+        groupNorth.forEach(line => {
+            if (line.options.opacity !== 0) line.setStyle({ opacity: 1 });
+        });
+        activeDecorators = decosNorth;
     } else {
-        map.addLayer(danielsGroup);
+        groupDaniels.forEach(line => {
+            if (line.options.opacity !== 0) line.setStyle({ opacity: 1 });
+        });
+        activeDecorators = decosDaniels;
     }
     
-    // Smoothly zoom/pan to keep both venue and active stop in view
-    const bounds = L.latLngBounds([venueCoords, stops[activeKey].coords]);
+    activeDecorators.forEach(d => map.addLayer(d.deco));
+    
+    // Smoothly zoom/pan to keep venue, library, and active stop in view
+    const bounds = L.latLngBounds([venueCoords, libraryCoords, stops[activeKey].coords]);
     map.flyToBounds(bounds, {
-        paddingTopLeft: [50, 300], // Extra padding on left/top to account for the popup
+        paddingTopLeft: [280, 50], // Extra padding on top to prevent popup overlapping text
         paddingBottomRight: [50, 50],
         duration: 1.5,
         easeLinearity: 0.25
