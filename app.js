@@ -128,24 +128,27 @@ const route125Path = [
     [-43.478352, 172.618694], [-43.478369, 172.619086], [-43.4785, 172.6243]
 ];
 
-// Generate Southbound (East lane) and Northbound (West lane) paths based on road center
-const mainNorthRouteSouthbound = mainNorthRoute.map(coord => [coord[0], coord[1] + 0.00015]);
-const mainNorthRouteNorthbound = mainNorthRoute.map(coord => [coord[0], coord[1] - 0.00015]).reverse();
+const mainNorthRouteRev = [...mainNorthRoute].reverse();
+const route125PathRev = [...route125Path].reverse();
 
-const route95PathSouthbound = mainNorthRoute.map(coord => [coord[0], coord[1] + 0.00020]);
-const route95PathNorthbound = mainNorthRoute.map(coord => [coord[0], coord[1] - 0.00020]).reverse();
+const mainLine = L.polyline(mainNorthRoute, { color: '#3498db', weight: 6, opacity: 0 }).addTo(map); 
+const mainLineRev = L.polyline(mainNorthRouteRev, { color: '#3498db', weight: 6, opacity: 0 }).addTo(map);
 
-const mainLine = L.polyline(mainNorthRouteSouthbound, { color: '#3498db', weight: 6, opacity: 0.2 }).addTo(map); // Blue for Route 1 South
-const mainLineRev = L.polyline(mainNorthRouteNorthbound, { color: '#3498db', weight: 6, opacity: 0.2 }).addTo(map); // Blue for Route 1 North
+// Use dashArray so Route 95 naturally blends with Route 1 on the exact same road
+const route95Line = L.polyline(mainNorthRoute, { color: '#9b59b6', weight: 6, opacity: 0, dashArray: '15, 15' }).addTo(map);
+const route95LineRev = L.polyline(mainNorthRouteRev, { color: '#9b59b6', weight: 6, opacity: 0, dashArray: '15, 15' }).addTo(map);
 
-const route95Line = L.polyline(route95PathSouthbound, { color: '#9b59b6', weight: 6, opacity: 0.2 }).addTo(map); // Purple for Route 95 South
-const route95LineRev = L.polyline(route95PathNorthbound, { color: '#9b59b6', weight: 6, opacity: 0.2 }).addTo(map); // Purple for Route 95 North
+const danielsLine = L.polyline(route125Path, { color: '#2ecc71', weight: 6, opacity: 0 }).addTo(map);
+const danielsLineRev = L.polyline(route125PathRev, { color: '#2ecc71', weight: 6, opacity: 0 }).addTo(map);
 
-const route125PathSouthbound = route125Path.map(coord => [coord[0], coord[1] + 0.00015]);
-const route125PathNorthbound = route125Path.map(coord => [coord[0], coord[1] - 0.00015]).reverse();
+// Add Custom Bright Street Labels
+L.marker([-43.4735, 172.6163], {
+    icon: L.divIcon({ className: 'street-label', html: 'Main North Road', iconSize: [200, 30] })
+}).addTo(map);
 
-const danielsLine = L.polyline(route125PathSouthbound, { color: '#2ecc71', weight: 6, opacity: 0.2 }).addTo(map); // Green for Route 125 South
-const danielsLineRev = L.polyline(route125PathNorthbound, { color: '#2ecc71', weight: 6, opacity: 0.2 }).addTo(map); // Green for Route 125 North
+L.marker([-43.4780, 172.6210], {
+    icon: L.divIcon({ className: 'street-label', html: 'Daniels Road', iconSize: [150, 30] })
+}).addTo(map);
 
 // Decorators setup
 function createDeco(line, color, offset) {
@@ -199,9 +202,9 @@ function cyclePanels() {
         walkingPaths[key].closeTooltip();
     }
     
-    // Dim all routes and remove decorators
+    // Hide all routes completely when inactive
     [mainLine, mainLineRev, route95Line, route95LineRev, danielsLine, danielsLineRev].forEach(line => {
-        line.setStyle({ opacity: 0.2 });
+        line.setStyle({ opacity: 0 });
     });
     activeDecorators.forEach(d => map.removeLayer(d.deco));
     
