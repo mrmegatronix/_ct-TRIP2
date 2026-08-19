@@ -185,3 +185,21 @@ body, html {
     border: 2px solid #45a29e;
     backdrop-filter: blur(8px);
 }
+
+/* Metallic Silver Title */
+.main-title {
+    position: absolute;
+    top: 30px;
+    left: 50px;
+    z-index: 1000;
+    margin: 0;
+    font-size: 56px;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-family: 'Arial Black', Impact, sans-serif;
+    letter-spacing: 2px;
+    background: linear-gradient(to bottom, #f2f2f2 0%, #a8a8a8 30%, #6d6d6d 50%, #444444 51%, #a8a8a8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(4px 4px 6px rgba(0,0,0,0.9));
+}
