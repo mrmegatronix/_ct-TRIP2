@@ -124,17 +124,23 @@ function offsetRoute(routePoints, latOffset, lngOffset) {
     return routePoints.map(point => [point[0] + latOffset, point[1] + lngOffset]);
 }
 
+// Base coordinates near the stops to calculate exact offsets
+// Base path longitude near stops is ~172.617242
+// Base path latitude near stops is ~-43.478308
+// North stop is 172.616740, South stop is 172.617030
+// East stop is -43.478260, West stop is -43.478370
+
 // Drive on Left (NZ):
-// Northbound travels South-to-North on West side (negative longitude)
-const mainNorthRoute_Northbound = offsetRoute(mainNorthRouteRev, 0, -0.0001);
-// Southbound travels North-to-South on East side (positive longitude)
-const mainNorthRoute_Southbound = offsetRoute(mainNorthRoute, 0, 0.0001);
+// Northbound travels South-to-North exactly through 'north' stop
+const mainNorthRoute_Northbound = offsetRoute(mainNorthRouteRev, 0, -0.000502);
+// Southbound travels North-to-South exactly through 'south' stop
+const mainNorthRoute_Southbound = offsetRoute(mainNorthRoute, 0, -0.000212);
 
 // Route 125 path goes SouthWest to NorthEast
-// Eastbound travels SW to NE on NorthWest side
-const route125Path_Eastbound = offsetRoute(route125Path, 0.00006, -0.00006);
-// Westbound travels NE to SW on SouthEast side
-const route125Path_Westbound = offsetRoute(route125PathRev, -0.00006, 0.00006);
+// Eastbound travels SW to NE exactly through 'east' stop
+const route125Path_Eastbound = offsetRoute(route125Path, 0.000048, 0);
+// Westbound travels NE to SW exactly through 'west' stop
+const route125Path_Westbound = offsetRoute(route125PathRev, -0.000062, 0);
 
 const mainLine = L.polyline(mainNorthRoute_Southbound, { color: '#3498db', weight: 6, opacity: 0 }).addTo(map); 
 const mainLineRev = L.polyline(mainNorthRoute_Northbound, { color: '#3498db', weight: 6, opacity: 0 }).addTo(map);
