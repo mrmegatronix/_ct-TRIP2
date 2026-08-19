@@ -12,11 +12,18 @@ const map = L.map('map', {
     zoomControl: false // Disable zoom control for cleaner dashboard look
 });
 
-// Add Dark Theme Map Tiles (CartoDB Dark Matter)
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+// Add Dark Theme Map Tiles (CartoDB Dark Matter without labels)
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     subdomains: 'abcd',
     maxZoom: 20
+}).addTo(map);
+
+// Add brightened labels as a separate layer
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
+    subdomains: 'abcd',
+    maxZoom: 20,
+    className: 'bright-labels'
 }).addTo(map);
 
 // Venue Marker using Coasters Logo
@@ -70,7 +77,8 @@ for (const [key, stop] of Object.entries(stops)) {
     const popup = L.popup({
         autoClose: false,
         closeOnClick: false,
-        className: 'custom-popup'
+        className: 'custom-popup',
+        maxWidth: 800
     })
     .setLatLng(stop.coords)
     .setContent(`<div class="eta-card" id="card-${key}"><h3>${stop.name}</h3><div style="text-align:center; padding:10px;">Loading ETAs...</div></div>`);
@@ -104,19 +112,19 @@ for (const [key, stop] of Object.entries(stops)) {
 
 // Draw Bus Routes with Directional Arrows
 const mainNorthRoute = [
-    [-43.4680, 172.6176], [-43.4755, 172.617096], [-43.476456, 172.61702],
-    [-43.47741, 172.616942], [-43.477471, 172.616937], [-43.477768, 172.616913],
-    [-43.478174, 172.61688], [-43.478202, 172.616878], [-43.478287, 172.616871],
-    [-43.478383, 172.616863], [-43.479117, 172.616804], [-43.479664, 172.616761],
-    [-43.4844, 172.6164]
+    [-43.4680, 172.6179], [-43.4755, 172.617396], [-43.476456, 172.61732],
+    [-43.47741, 172.617242], [-43.477471, 172.617237], [-43.477768, 172.617213],
+    [-43.478174, 172.61718], [-43.478202, 172.617178], [-43.478287, 172.617171],
+    [-43.478383, 172.617163], [-43.479117, 172.617104], [-43.479664, 172.617061],
+    [-43.4844, 172.6167]
 ];
 
 const route125Path = [
-    [-43.4844, 172.6164], [-43.479664, 172.616761], [-43.479117, 172.616804], 
-    [-43.478383, 172.616863], [-43.478287, 172.616871], [-43.478202, 172.616878],
-    [-43.478199, 172.616878], [-43.478292, 172.616984], [-43.478292, 172.617],
-    [-43.478308, 172.617393], [-43.478316, 172.617585], [-43.478349, 172.618325],
-    [-43.478352, 172.618394], [-43.478369, 172.618786], [-43.4785, 172.6240]
+    [-43.4844, 172.6167], [-43.479664, 172.617061], [-43.479117, 172.617104], 
+    [-43.478383, 172.617163], [-43.478287, 172.617171], [-43.478202, 172.617178],
+    [-43.478199, 172.617178], [-43.478292, 172.617284], [-43.478292, 172.6173],
+    [-43.478308, 172.617693], [-43.478316, 172.617885], [-43.478349, 172.618625],
+    [-43.478352, 172.618694], [-43.478369, 172.619086], [-43.4785, 172.6243]
 ];
 
 // Draw main routes
@@ -198,13 +206,15 @@ function cyclePanels() {
     
     // Show only active routes at 100% opacity and add their decorators
     if (activeKey === 'north') {
-        mainLine.setStyle({ opacity: 1 });
-        route95Line.setStyle({ opacity: 1 });
-        activeDecorators = [decoMain, deco95];
-    } else if (activeKey === 'south') {
+        // Bus heading North, so use the Reversed lines (which are drawn South-to-North)
         mainLineRev.setStyle({ opacity: 1 });
         route95LineRev.setStyle({ opacity: 1 });
         activeDecorators = [decoMainRev, deco95Rev];
+    } else if (activeKey === 'south') {
+        // Bus heading South, use the original lines (drawn North-to-South)
+        mainLine.setStyle({ opacity: 1 });
+        route95Line.setStyle({ opacity: 1 });
+        activeDecorators = [decoMain, deco95];
     } else if (activeKey === 'east') {
         danielsLine.setStyle({ opacity: 1 });
         activeDecorators = [decoDaniels];

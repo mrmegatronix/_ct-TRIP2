@@ -153,9 +153,9 @@ body, html {
     font-weight: bold !important;
 }
 
-/* Brighten street names */
-.leaflet-tile-pane {
-    filter: brightness(1.6) contrast(1.1) saturate(1.2);
+/* Brighten just the labels layer */
+.bright-labels {
+    filter: brightness(2) contrast(1.5) saturate(1.5);
 }
 
 /* Animate walking dotted line */
