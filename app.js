@@ -127,19 +127,24 @@ const route125Path = [
     [-43.478352, 172.618694], [-43.478369, 172.619086], [-43.4785, 172.6243]
 ];
 
-// Draw main routes
-const mainNorthRouteReverse = [...mainNorthRoute].reverse();
-const mainLine = L.polyline(mainNorthRoute, { color: '#3498db', weight: 6, opacity: 0.2 }).addTo(map); // Blue for Route 1
-const mainLineRev = L.polyline(mainNorthRouteReverse, { color: '#3498db', weight: 6, opacity: 0.2 }).addTo(map);
+// Generate Southbound (East lane) and Northbound (West lane) paths based on road center
+const mainNorthRouteSouthbound = mainNorthRoute.map(coord => [coord[0], coord[1] + 0.00015]);
+const mainNorthRouteNorthbound = mainNorthRoute.map(coord => [coord[0], coord[1] - 0.00015]).reverse();
 
-const route95Path = mainNorthRoute.map(coord => [coord[0], coord[1] - 0.00005]);
-const route95PathReverse = [...route95Path].reverse();
-const route95Line = L.polyline(route95Path, { color: '#9b59b6', weight: 6, opacity: 0.2 }).addTo(map); // Purple for Route 95
-const route95LineRev = L.polyline(route95PathReverse, { color: '#9b59b6', weight: 6, opacity: 0.2 }).addTo(map);
+const route95PathSouthbound = mainNorthRoute.map(coord => [coord[0], coord[1] + 0.00020]);
+const route95PathNorthbound = mainNorthRoute.map(coord => [coord[0], coord[1] - 0.00020]).reverse();
 
-const route125PathReverse = [...route125Path].reverse();
-const danielsLine = L.polyline(route125Path, { color: '#2ecc71', weight: 6, opacity: 0.2 }).addTo(map); // Green for Route 125
-const danielsLineRev = L.polyline(route125PathReverse, { color: '#2ecc71', weight: 6, opacity: 0.2 }).addTo(map);
+const mainLine = L.polyline(mainNorthRouteSouthbound, { color: '#3498db', weight: 6, opacity: 0.2 }).addTo(map); // Blue for Route 1 South
+const mainLineRev = L.polyline(mainNorthRouteNorthbound, { color: '#3498db', weight: 6, opacity: 0.2 }).addTo(map); // Blue for Route 1 North
+
+const route95Line = L.polyline(route95PathSouthbound, { color: '#9b59b6', weight: 6, opacity: 0.2 }).addTo(map); // Purple for Route 95 South
+const route95LineRev = L.polyline(route95PathNorthbound, { color: '#9b59b6', weight: 6, opacity: 0.2 }).addTo(map); // Purple for Route 95 North
+
+const route125PathSouthbound = route125Path.map(coord => [coord[0], coord[1] + 0.00015]);
+const route125PathNorthbound = route125Path.map(coord => [coord[0], coord[1] - 0.00015]).reverse();
+
+const danielsLine = L.polyline(route125PathSouthbound, { color: '#2ecc71', weight: 6, opacity: 0.2 }).addTo(map); // Green for Route 125 South
+const danielsLineRev = L.polyline(route125PathNorthbound, { color: '#2ecc71', weight: 6, opacity: 0.2 }).addTo(map); // Green for Route 125 North
 
 // Decorators setup
 function createDeco(line, color, offset) {
