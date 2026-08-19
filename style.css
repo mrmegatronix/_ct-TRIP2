@@ -15,10 +15,12 @@ body, html {
     color: #fff;
     padding: 12px 40px;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
     border-bottom: 2px solid #45a29e;
     flex-shrink: 0;
+    gap: 10px;
 }
 
 .app-main {
@@ -40,7 +42,7 @@ body, html {
 .arrivals-board {
     position: absolute;
     z-index: 1000;
-    width: 250px;
+    width: 320px;
     display: none;
     pointer-events: none;
 }
@@ -56,8 +58,8 @@ body, html {
 }
 
 .eta-card h3 {
-    margin: 0 0 4px 0;
-    font-size: 16px;
+    margin: 0 0 8px 0;
+    font-size: 24px;
     color: #66fcf1;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -69,8 +71,8 @@ body, html {
 }
 
 .walk-info {
-    margin: 4px 0 8px 0;
-    font-size: 13px;
+    margin: 4px 0 12px 0;
+    font-size: 16px;
     color: #ff4d4d;
     font-weight: bold;
     text-align: center;
@@ -101,10 +103,10 @@ body, html {
 .eta-route {
     font-weight: bold;
     color: #fff;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 16px;
-    min-width: 28px;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 22px;
+    min-width: 36px;
     text-align: center;
     white-space: nowrap;
     flex-shrink: 0;
@@ -119,13 +121,13 @@ body, html {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 16px;
+    font-size: 22px;
     color: #c5c6c7;
 }
 
 .eta-time {
     font-weight: bold;
-    font-size: 16px;
+    font-size: 24px;
     color: #66fcf1;
     white-space: nowrap;
     flex-shrink: 0;
@@ -190,18 +192,19 @@ body, html {
 /* ======== CLOCK ======== */
 .clock {
     font-family: 'Courier New', Courier, monospace;
-    font-size: 36px;
+    font-size: 48px;
     font-weight: bold;
     color: #66fcf1;
     text-shadow: 0px 0px 10px rgba(102, 252, 241, 0.5);
     white-space: nowrap;
     flex-shrink: 0;
+    margin-bottom: 5px;
 }
 
 /* ======== TITLE (matches clock) ======== */
 .main-title {
     margin: 0;
-    font-size: 28px;
+    font-size: 36px;
     font-weight: bold;
     text-transform: uppercase;
     font-family: 'Courier New', Courier, monospace;
