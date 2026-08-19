@@ -359,7 +359,12 @@ function fetchETAs() {
             const dist = Math.round(venueLatLng.distanceTo(stopLatLng));
             const walkingTime = Math.ceil(dist / 84);
             
-            let html = `<h3>${stop.name}</h3>`;
+            const nameParts = stop.name.toUpperCase().split(' ');
+            const formattedName = nameParts.length > 1 
+                ? `${nameParts[0]}<br>${nameParts.slice(1).join(' ')}` 
+                : nameParts[0];
+            
+            let html = `<h3>${formattedName}</h3>`;
             html += `<p class="walk-info">🚶 ${dist}m · ${walkingTime} min walk</p>`;
             
             if (stopData && stopData.length > 0) {
