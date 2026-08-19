@@ -100,26 +100,19 @@ body, html {
     white-space: nowrap;
 }
 
-/* Custom Leaflet overrides for dark theme popups */
-.leaflet-popup-content-wrapper {
-    background: transparent !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-}
-
-.leaflet-popup-content {
-    margin: 0 !important;
-}
-
-.leaflet-popup-tip {
-    background: rgba(11, 12, 16, 0.9) !important;
-    border: 1px solid #45a29e;
-}
-
-.leaflet-container a.leaflet-popup-close-button {
-    color: #fff;
-    top: 5px;
-    right: 5px;
+/* Fixed Arrivals Sidebar (Left side of map) */
+.arrivals-board {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    z-index: 1000;
+    width: 600px;
+    background: rgba(11, 12, 16, 0.9);
+    border: 2px solid #45a29e;
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    display: none; /* hidden until first update */
 }
 
 /* Venue Icon Styling */
