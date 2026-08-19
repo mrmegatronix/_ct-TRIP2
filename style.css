@@ -3,6 +3,7 @@ body, html {
     padding: 0;
     height: 100%;
     width: 100%;
+    overflow: hidden;
     background: #000;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
@@ -12,16 +13,18 @@ body, html {
 .app-header {
     background: #111;
     color: #fff;
-    padding: 20px 50px;
+    padding: 12px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 2px solid #45a29e;
+    flex-shrink: 0;
 }
 
 .app-main {
     flex: 1;
     position: relative;
+    overflow: hidden;
 }
 
 #map {
@@ -33,36 +36,62 @@ body, html {
     z-index: 1;
 }
 
-/* Custom UI Cards for Bus ETAs */
+/* ======== ARRIVALS PANEL ======== */
+.arrivals-board {
+    position: absolute;
+    z-index: 1000;
+    width: 250px;
+    display: none;
+    pointer-events: none;
+}
+
 .eta-card {
-    background: rgba(11, 12, 16, 0.9);
+    background: rgba(11, 12, 16, 0.92);
     border: 2px solid #45a29e;
-    border-radius: 12px;
-    padding: 24px;
+    border-radius: 10px;
+    padding: 14px 16px;
     color: #fff;
-    min-width: 600px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
 }
 
 .eta-card h3 {
-    margin: 0 0 15px 0;
-    font-size: 48px;
+    margin: 0 0 4px 0;
+    font-size: 16px;
     color: #66fcf1;
-    border-bottom: 2px solid #45a29e;
-    padding-bottom: 8px;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #45a29e;
+    padding-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.walk-info {
+    margin: 4px 0 8px 0;
+    font-size: 13px;
+    color: #ff4d4d;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.eta-loading {
+    text-align: center;
+    padding: 6px;
+    font-style: italic;
+    font-size: 13px;
+    color: #888;
 }
 
 .eta-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(69, 162, 158, 0.3);
-    font-size: 36px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(69, 162, 158, 0.2);
+    gap: 8px;
 }
 
 .eta-row:last-child {
@@ -71,51 +100,38 @@ body, html {
 
 .eta-route {
     font-weight: bold;
-    color: #c5c6c7;
-    background: rgba(69, 162, 158, 0.2);
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-size: 36px;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 16px;
+    min-width: 28px;
+    text-align: center;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
-/* Specific route colors */
-.route-1 { background-color: #3498db; }  /* Blue Line */
-.route-125 { background-color: #2ecc71; } /* Green */
-.route-95 { background-color: #9b59b6; }  /* Purple */
+.route-1 { background-color: #3498db; }
+.route-125 { background-color: #2ecc71; }
+.route-95 { background-color: #9b59b6; }
 
 .eta-dest {
     flex-grow: 1;
-    margin: 0 15px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 26px;
+    font-size: 16px;
     color: #c5c6c7;
 }
 
 .eta-time {
     font-weight: bold;
-    font-size: 28px;
+    font-size: 16px;
     color: #66fcf1;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
-/* Fixed Arrivals Sidebar (Left side of map) */
-.arrivals-board {
-    position: absolute;
-    top: 50px;
-    left: 50px;
-    z-index: 1000;
-    width: 600px;
-    background: rgba(11, 12, 16, 0.9);
-    border: 2px solid #45a29e;
-    border-radius: 12px;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    display: none; /* hidden until first update */
-}
-
-/* Venue Icon Styling */
+/* ======== VENUE & STOPS ======== */
 .venue-icon {
     display: flex;
     align-items: center;
@@ -129,7 +145,6 @@ body, html {
     border: 3px solid #0b0c10;
 }
 
-/* Bus Stop Icon Styling */
 .stop-icon {
     display: flex;
     align-items: center;
@@ -141,7 +156,6 @@ body, html {
     border: 2px solid #45a29e;
 }
 
-/* Venue Marker and Walking Line Tooltip */
 .venue-logo {
     border-radius: 50%;
     border: 3px solid #66fcf1;
@@ -150,26 +164,19 @@ body, html {
     object-fit: cover;
 }
 
-.walking-tooltip {
-    background-color: transparent !important;
-    color: #ff4d4d;
-    border: none !important;
-    box-shadow: none !important;
-    font-weight: bold;
-    font-size: 20px;
-    text-shadow: 2px 2px 4px black;
-    direction: ltr;
-}
-.walking-tooltip::before {
-    display: none;
+.venue-tooltip {
+    font-size: 14px !important;
+    font-weight: bold !important;
+    white-space: nowrap !important;
 }
 
 .leaflet-tooltip {
-    font-size: 20px !important;
+    font-size: 14px !important;
     font-weight: bold !important;
+    white-space: nowrap !important;
 }
 
-/* Animate walking dotted line */
+/* ======== WALKING LINE ANIMATION ======== */
 @keyframes dash-animation {
     to {
         stroke-dashoffset: -15;
@@ -180,23 +187,33 @@ body, html {
     animation: dash-animation 1s linear infinite;
 }
 
-/* Clock styling for TV display */
+/* ======== CLOCK ======== */
 .clock {
     font-family: 'Courier New', Courier, monospace;
-    font-size: 64px;
+    font-size: 36px;
     font-weight: bold;
     color: #66fcf1;
     text-shadow: 0px 0px 10px rgba(102, 252, 241, 0.5);
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
-/* Title matches clock style */
+/* ======== TITLE (matches clock) ======== */
 .main-title {
     margin: 0;
-    font-size: 48px;
+    font-size: 28px;
     font-weight: bold;
     text-transform: uppercase;
     font-family: 'Courier New', Courier, monospace;
-    letter-spacing: 4px;
+    letter-spacing: 3px;
     color: #66fcf1;
     text-shadow: 0px 0px 10px rgba(102, 252, 241, 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Hide Leaflet attribution on TV dashboard */
+.leaflet-control-attribution {
+    display: none !important;
 }
