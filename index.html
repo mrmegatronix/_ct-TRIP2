@@ -7,7 +7,7 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css?v=112">
+    <link rel="stylesheet" href="style.css?v=114">
 </head>
 <body>
     <header class="app-header">
@@ -23,17 +23,10 @@
             <div id="qrcode"></div>
             <p>SCAN TO GET THIS INFO ON YOUR OWN MOBILE PHONE</p>
         </div>
-        <!-- Pointer Line SVG Overlay -->
-        <svg id="leader-line-svg" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: 999; opacity: 0; transition: opacity 0.5s ease-in-out;">
-            <line id="leader-line-glow" x1="0" y1="0" x2="0" y2="0" stroke="#000000" stroke-width="6" opacity="0.5" />
-            <line id="leader-line" x1="0" y1="0" x2="0" y2="0" stroke="#66fcf1" stroke-width="3" stroke-dasharray="10,10" />
-            <circle id="leader-dot-glow" cx="0" cy="0" r="10" fill="none" stroke="#000000" stroke-width="4" opacity="0.5" />
-            <circle id="leader-dot" cx="0" cy="0" r="10" fill="#45a29e" stroke="#ffffff" stroke-width="3" />
-        </svg>
     </main>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet-polylinedecorator@1.6.0/dist/leaflet.polylineDecorator.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="app.js?v=112"></script>
+    <script src="app.js?v=114"></script>
 </body>
 </html>
