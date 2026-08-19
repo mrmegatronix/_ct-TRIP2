@@ -7,6 +7,8 @@ const venueCoords = [-43.47813787786105, 172.61740700674628];
 
 // Map Initialization - Dashboard Mode (No interactions, locked view)
 const map = L.map('map', {
+    center: [-43.477800, 172.617270], // perfect midpoint
+    zoom: 19,
     zoomControl: false,
     dragging: false,
     scrollWheelZoom: false,
@@ -59,10 +61,10 @@ const stops = {
 
 // Panel positioning: which side of the stop should the panel appear?
 const panelAnchors = {
-    north: { direction: 'left',  offset: [-360, -140] },
-    south: { direction: 'right', offset: [40, -60] },
-    east:  { direction: 'right', offset: [40, -60] },
-    west:  { direction: 'left',  offset: [-360, -60] }
+    north: { direction: 'left',  offset: [-360, -200] }, // far left and up
+    south: { direction: 'right', offset: [60, -80] },    // far right
+    east:  { direction: 'right', offset: [60, -200] },   // far right and up
+    west:  { direction: 'left',  offset: [-360, 60] }    // far left and down
 };
 
 const stopIcon = L.divIcon({
@@ -102,10 +104,6 @@ for (const [key, stop] of Object.entries(stops)) {
     
     walkingPaths[key] = walkLine;
 }
-
-const allStopCoords = Object.values(stops).map(s => s.coords);
-allStopCoords.push(venueCoords);
-map.fitBounds(L.latLngBounds(allStopCoords), { padding: [50, 50] });
 
 // ============================================================
 // REAL OSM ROAD GEOMETRY — actual carriageway coordinates
