@@ -56,7 +56,7 @@ const stops = {
 };
 
 const footpaths = {
-    north: [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.61690], [-43.47830, 172.61670], stops.north.coords],
+    north: [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.61690], stops.south.coords, stops.north.coords],
     south: [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.61690], stops.south.coords],
     east:  [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.617800], stops.east.coords],
     west:  [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.61745], [-43.47835, 172.61745], stops.west.coords]
