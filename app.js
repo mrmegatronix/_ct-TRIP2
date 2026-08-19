@@ -55,12 +55,11 @@ const stops = {
     west:  { name: 'West (Daniels Rd)', coords: [-43.478370, 172.617420], id: '29900' }  // South side
 };
 
-// Panel positioning: which side of the stop should the panel appear?
-const panelAnchors = {
-    north: { direction: 'left',  offset: [-500, -200] },
-    south: { direction: 'right', offset: [40, -80] },
-    east:  { direction: 'right', offset: [40, -200] },
-    west:  { direction: 'left',  offset: [-500, 60] }
+const footpaths = {
+    north: [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.61690], [-43.47830, 172.61670], stops.north.coords],
+    south: [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.61690], stops.south.coords],
+    east:  [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.617800], stops.east.coords],
+    west:  [venueCoords, [-43.47826, 172.61740], [-43.47826, 172.61745], [-43.47835, 172.61745], stops.west.coords]
 };
 
 const stopIcon = L.divIcon({
@@ -93,7 +92,7 @@ for (const [key, stop] of Object.entries(stops)) {
     </div>`;
     
     // Draw Red Walking Line (no tooltip)
-    const walkLine = L.polyline([venueCoords, stop.coords], {
+    const walkLine = L.polyline(footpaths[key], {
         color: '#ff4d4d',
         weight: 3,
         dashArray: '5, 10',
@@ -173,11 +172,11 @@ const route125Path_Eastbound = [
     [-43.4835056, 172.6163300], [-43.4826265, 172.6163900], [-43.4809881, 172.6165197],
     [-43.4798471, 172.6166076], [-43.4792518, 172.6166571], [-43.4786799, 172.6167027],
     [-43.4783829, 172.6167265], [-43.4782811, 172.6167334],
-    ...offsetRoute(danielsRoadCenter, 0.00004, -0.00004)
+    ...offsetRoute(danielsRoadCenter, 0.000015, -0.000015)
 ];
 
 const route125Path_Westbound = [
-    ...offsetRoute([...danielsRoadCenter].reverse(), -0.00004, 0.00004),
+    ...offsetRoute([...danielsRoadCenter].reverse(), -0.000015, 0.000015),
     [-43.4782869, 172.6168707], [-43.4783829, 172.6168628], [-43.4791171, 172.6168043],
     [-43.4796639, 172.6167608], [-43.4798515, 172.6167479], [-43.4812098, 172.6166362],
     [-43.4815305, 172.6166134], [-43.4819221, 172.6165798], [-43.4826265, 172.6165208],
@@ -232,10 +231,36 @@ let currentStopIndex = 0;
 function positionPanel(key) {
     const board = document.getElementById('arrivals-board');
     const stopPixel = map.latLngToContainerPoint(stops[key].coords);
-    const anchor = panelAnchors[key];
     
-    board.style.left = (stopPixel.x + anchor.offset[0]) + 'px';
-    board.style.top  = (stopPixel.y + anchor.offset[1]) + 'px';
+    const width = 480;
+    const height = board.offsetHeight || 300;
+    const mapW = map.getSize().x;
+    const mapH = map.getSize().y;
+    
+    let left = stopPixel.x;
+    let top = stopPixel.y;
+    
+    if (key === 'north') {
+        left = stopPixel.x - width - 40;
+        top = stopPixel.y - height / 2;
+    } else if (key === 'south') {
+        left = stopPixel.x + 40;
+        top = stopPixel.y - height / 2;
+    } else if (key === 'east') {
+        left = stopPixel.x - width / 2;
+        top = stopPixel.y - height - 40;
+    } else if (key === 'west') {
+        left = stopPixel.x - width / 2;
+        top = stopPixel.y + 40;
+    }
+    
+    if (left < 20) left = 20;
+    if (top < 100) top = 100;
+    if (left + width > mapW - 20) left = mapW - width - 20;
+    if (top + height > mapH - 20) top = mapH - height - 20;
+    
+    board.style.left = left + 'px';
+    board.style.top  = top + 'px';
 }
 
 function cyclePanels() {

@@ -11,20 +11,29 @@ body, html {
 }
 
 .app-header {
-    background: #111;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2000;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
     color: #fff;
-    padding: 12px 40px;
+    padding: 20px 40px 40px 40px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #45a29e;
-    flex-shrink: 0;
+    align-items: flex-start;
+    border-bottom: none;
+    pointer-events: none;
 }
 
 .app-main {
     flex: 1;
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
 }
 
