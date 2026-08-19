@@ -61,10 +61,10 @@ const stops = {
 
 // Panel positioning: which side of the stop should the panel appear?
 const panelAnchors = {
-    north: { direction: 'left',  offset: [-360, -200] }, // far left and up
-    south: { direction: 'right', offset: [60, -80] },    // far right
-    east:  { direction: 'right', offset: [60, -200] },   // far right and up
-    west:  { direction: 'left',  offset: [-360, 60] }    // far left and down
+    north: { direction: 'left',  offset: [-500, -200] },
+    south: { direction: 'right', offset: [40, -80] },
+    east:  { direction: 'right', offset: [40, -200] },
+    west:  { direction: 'left',  offset: [-500, 60] }
 };
 
 const stopIcon = L.divIcon({
