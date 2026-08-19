@@ -49,10 +49,18 @@ body, html {
 /* ======== ARRIVALS PANEL ======== */
 .arrivals-board {
     position: absolute;
-    z-index: 1000;
     width: 480px;
+    background: rgba(11, 12, 16, 0.92); /* Deeper space gray/black */
+    border: 1px solid rgba(69, 162, 158, 0.3); /* Subtle teal border */
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7);
+    color: #c5c6c7;
+    z-index: 1000;
+    backdrop-filter: blur(12px); /* Stronger glass effect */
     display: none;
-    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out, left 0.5s ease-out, top 0.5s ease-out;
 }
 
 .eta-card {
@@ -266,7 +274,7 @@ body, html {
 .qr-container {
     position: absolute;
     bottom: 40px;
-    right: 40px;
+    left: 40px;
     z-index: 2000;
     background: rgba(11, 12, 16, 0.92);
     border: 3px solid #45a29e;
