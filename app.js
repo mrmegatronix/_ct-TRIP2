@@ -229,6 +229,7 @@ setInterval(() => {
 // Carousel Logic (Rotate active panel every 15 seconds)
 const stopKeys = Object.keys(stops);
 let currentStopIndex = 0;
+let activeKey = null;
 
 let qrcode = null;
 function updateQRCode(stopId) {
@@ -250,45 +251,91 @@ function updateQRCode(stopId) {
 
 function positionPanel(key) {
     const board = document.getElementById('arrivals-board');
-    const stopPixel = map.latLngToContainerPoint(stops[key].coords);
-    
     const width = 480;
     const height = board.offsetHeight || 300;
-    const mapW = map.getSize().x;
-    const mapH = map.getSize().y;
+    const mapW = window.innerWidth;
+    const mapH = window.innerHeight;
     
-    let left = stopPixel.x;
-    let top = stopPixel.y;
+    let left, top;
     
     if (key === 'north') {
-        left = stopPixel.x - width - 60; // Push West, away from Main North Rd
-        top = stopPixel.y - height / 2;
+        left = 40; // Top-Left
+        top = 140; // Below header
     } else if (key === 'south') {
-        left = stopPixel.x + 60; // Push East, away from Main North Rd
-        top = stopPixel.y - height / 2;
+        left = mapW - width - 40; // Bottom-Right
+        top = mapH - height - 40;
     } else if (key === 'east') {
-        left = stopPixel.x + 40; // Push East, away from intersection
-        top = stopPixel.y - height - 40; // Push North, away from Daniels Rd
+        left = mapW - width - 40; // Top-Right
+        top = 140;
     } else if (key === 'west') {
-        left = stopPixel.x + 40; // Push East, away from intersection
-        top = stopPixel.y + 40; // Push South, away from Daniels Rd
+        left = mapW - width - 40; // Bottom-Right
+        top = mapH - height - 40;
     }
-    
-    if (left < 20) left = 20;
-    if (top < 100) top = 100;
-    if (left + width > mapW - 20) left = mapW - width - 20;
-    if (top + height > mapH - 20) top = mapH - height - 20;
     
     board.style.left = left + 'px';
     board.style.top  = top + 'px';
 }
 
-function cyclePanels() {
-    const activeKey = stopKeys[currentStopIndex];
+function updateLeaderLine() {
+    if (!activeKey) return;
     const board = document.getElementById('arrivals-board');
+    const svg = document.getElementById('leader-line-svg');
+    const line = document.getElementById('leader-line');
+    const lineGlow = document.getElementById('leader-line-glow');
+    const dot = document.getElementById('leader-dot');
+    const dotGlow = document.getElementById('leader-dot-glow');
     
-    // Fade out board
+    // Only update if visible
+    if (board.style.opacity === '0' || board.style.opacity === '') {
+        svg.style.opacity = '0';
+        return;
+    }
+    
+    const stopPixel = map.latLngToContainerPoint(stops[activeKey].coords);
+    const rect = board.getBoundingClientRect();
+    
+    let panelX, panelY;
+    
+    if (activeKey === 'north') { // Top-Left -> attach to bottom-right of panel
+        panelX = rect.right;
+        panelY = rect.bottom;
+    } else if (activeKey === 'south') { // Bottom-Right -> attach to top-left of panel
+        panelX = rect.left;
+        panelY = rect.top;
+    } else if (activeKey === 'east') { // Top-Right -> attach to bottom-left of panel
+        panelX = rect.left;
+        panelY = rect.bottom;
+    } else if (activeKey === 'west') { // Bottom-Right -> attach to top-left of panel
+        panelX = rect.left;
+        panelY = rect.top;
+    }
+    
+    [line, lineGlow].forEach(el => {
+        el.setAttribute('x1', panelX);
+        el.setAttribute('y1', panelY);
+        el.setAttribute('x2', stopPixel.x);
+        el.setAttribute('y2', stopPixel.y);
+    });
+    
+    [dot, dotGlow].forEach(el => {
+        el.setAttribute('cx', stopPixel.x);
+        el.setAttribute('cy', stopPixel.y);
+    });
+    
+    svg.style.opacity = '1';
+}
+
+map.on('move', updateLeaderLine);
+map.on('zoom', updateLeaderLine);
+
+function cyclePanels() {
+    activeKey = stopKeys[currentStopIndex];
+    const board = document.getElementById('arrivals-board');
+    const svg = document.getElementById('leader-line-svg');
+    
+    // Fade out board and leader line
     board.style.opacity = '0';
+    if (svg) svg.style.opacity = '0';
     
     // Hide all walking lines
     for (const key of stopKeys) {
@@ -338,8 +385,9 @@ function cyclePanels() {
         
         activeDecorators.forEach(d => map.addLayer(d.deco));
         
-        // Fade in board
+        // Fade in board and update leader line
         board.style.opacity = '1';
+        updateLeaderLine();
     });
     
     currentStopIndex = (currentStopIndex + 1) % stopKeys.length;
