@@ -40,10 +40,10 @@ L.marker(venueCoords, { icon: venueIcon, zIndexOffset: 1000 }).addTo(map);
 
 const libraryCoords = [-43.4774150, 172.6164750];
 const libraryIcon = L.divIcon({
-    className: 'venue-icon',
-    html: '📚',
-    iconSize: [30, 30],
-    iconAnchor: [15, 15]
+    className: 'custom-venue-icon',
+    html: '<div class="venue-icon-container"><i class="fa-solid fa-building-columns"></i></div>',
+    iconSize: [48, 48],
+    iconAnchor: [24, 24]
 });
 L.marker(libraryCoords, { icon: libraryIcon }).addTo(map);
 
@@ -63,10 +63,10 @@ const footpaths = {
 };
 
 const stopIcon = L.divIcon({
-    className: 'stop-icon',
-    html: '🚌',
-    iconSize: [24, 24],
-    iconAnchor: [12, 12]
+    className: 'custom-stop-icon',
+    html: '<div class="bus-icon-container"><i class="fa-solid fa-bus"></i></div>',
+    iconSize: [40, 40],
+    iconAnchor: [20, 20]
 });
 
 const popups = {};
