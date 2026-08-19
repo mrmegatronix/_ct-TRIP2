@@ -84,9 +84,11 @@ for (const [key, stop] of Object.entries(stops)) {
     const dist = Math.round(venueLatLng.distanceTo(stopLatLng));
     const walkingTime = Math.ceil(dist / 84);
     
+    const formattedName = stop.name.replace(' (', '<br>(').toUpperCase();
+    
     // Store HTML — walking info is inside the panel
     popups[key] = `<div class="eta-card" id="card-${key}">
-        <h3>${stop.name}</h3>
+        <h3>${formattedName}</h3>
         <p class="walk-info">🚶 ${dist} meters (${walkingTime} min walk)</p>
         <div class="eta-loading">Loading ETAs...</div>
     </div>`;
